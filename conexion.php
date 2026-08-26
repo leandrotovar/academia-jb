@@ -1,5 +1,10 @@
 <?php
-if (getenv("DATABASE_URL")) {
+if (getenv("MYSQLHOST")) {
+    $host = getenv("MYSQLHOST");
+    $user = getenv("MYSQLUSER");
+    $pass = getenv("MYSQLPASSWORD");
+    $db = getenv("MYSQLDATABASE");
+} elseif (getenv("DATABASE_URL")) {
     $url = parse_url(getenv("DATABASE_URL"));
     $host = $url["host"];
     $user = $url["user"];
