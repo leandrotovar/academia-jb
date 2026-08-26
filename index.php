@@ -5,7 +5,7 @@ include 'conexion.php';
 
 // Validar inicio de sesión
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: login.php");
+    header("Location: inicio_publico.php");
     exit();
 }
 
