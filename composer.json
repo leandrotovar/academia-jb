@@ -1,0 +1,9 @@
+{
+  "name": "leandrotovar/academia-jb",
+  "description": "Academia JB - Asesoria Academica Integral",
+  "type": "project",
+  "require": {
+    "php": ">=8.0",
+    "ext-mysqli": "*"
+  }
+}
