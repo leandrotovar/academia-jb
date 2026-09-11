@@ -14,6 +14,31 @@ if (!isset($_SESSION['usuario_id'])) {
 $id_usuario = (int) $_SESSION['usuario_id'];
 $accion = $_POST['accion'] ?? $_GET['accion'] ?? '';
 
+// ---------- SALA ACTIVA DE UN CURSO ----------
+if ($accion === 'sala_curso') {
+    $materia = substr(trim($_GET['materia'] ?? ''), 0, 50);
+    if ($materia === '') { echo json_encode(['ok' => 1, 'sala' => null]); exit; }
+    $stmt = $conn->prepare("SELECT id, codigo, materia, epoca, creador_id FROM pizarra_salas
+                            WHERE materia = ? AND activa = 1 ORDER BY id DESC LIMIT 1");
+    $stmt->bind_param('s', $materia);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    $fila = $res->fetch_assoc();
+    if ($fila) {
+        $conn->query("UPDATE pizarra_salas SET ultima_actividad = NOW() WHERE id = " . (int) $fila['id']);
+        echo json_encode(['ok' => 1, 'sala' => [
+            'id' => (int) $fila['id'],
+            'codigo' => $fila['codigo'],
+            'materia' => $fila['materia'],
+            'epoca' => (int) $fila['epoca'],
+            'creador_id' => (int) $fila['creador_id']
+        ]]);
+    } else {
+        echo json_encode(['ok' => 1, 'sala' => null]);
+    }
+    exit;
+}
+
 // ---------- CREAR SALA ----------
 if ($accion === 'crear_sala') {
     $materias = ['matematica', 'fisica', 'quimica', 'aeronautica', 'informatica', 'blanco'];
@@ -26,6 +51,9 @@ if ($accion === 'crear_sala') {
         $chk = $conn->query("SELECT id FROM pizarra_salas WHERE codigo = '$codigo'");
     } while ($chk && $chk->num_rows > 0);
 
+    if ($materia !== 'blanco') {
+        $conn->query("UPDATE pizarra_salas SET activa = 0 WHERE materia = '$materia' AND activa = 1");
+    }
     $stmt = $conn->prepare("INSERT INTO pizarra_salas (codigo, materia, creador_id, activa, ultima_actividad) VALUES (?, ?, ?, 1, NOW())");
     $stmt->bind_param('ssi', $codigo, $materia, $id_usuario);
     $stmt->execute();

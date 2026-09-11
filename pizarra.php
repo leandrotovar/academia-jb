@@ -584,7 +584,8 @@ if (esSala()) {
 } else {
     var btnCrearSala = document.getElementById('btnCrearSala');
     if (btnCrearSala) btnCrearSala.addEventListener('click', function(){
-        var m = plantillaActiva === 'blanco' ? 'matematica' : plantillaActiva;
+        var m = (MATERIA_INICIAL && MATERIA_INICIAL !== 'blanco') ? MATERIA_INICIAL
+              : (plantillaActiva === 'blanco' ? 'matematica' : plantillaActiva);
         var body = 'accion=crear_sala&materia=' + encodeURIComponent(m);
         var xhr = new XMLHttpRequest();
         xhr.open('POST', 'ajax_pizarra.php', true);

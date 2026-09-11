@@ -11,6 +11,20 @@ $id_usuario = $_SESSION['usuario_id'];
 $res_user = $conn->query("SELECT * FROM usuarios WHERE id = $id_usuario");
 $usuario = $res_user->fetch_assoc();
 $dashboard_url = ($usuario['tipo_tea'] == 1) ? 'index_tea.php' : 'index.php';
+
+require_once 'pizarra_bd.php';
+pizarra_crear_tablas($conn);
+
+$materia_curso_php = isset($_GET['materia']) ? trim($_GET['materia']) : '';
+$sala_activa = null;
+if ($materia_curso_php !== '') {
+    $stmt = $conn->prepare("SELECT codigo, materia, epoca, creador_id FROM pizarra_salas
+                            WHERE materia = ? AND activa = 1 ORDER BY id DESC LIMIT 1");
+    $stmt->bind_param('s', $materia_curso_php);
+    $stmt->execute();
+    $sala_activa = $stmt->get_result()->fetch_assoc();
+}
+$es_profesor = ($usuario['tipo_tea'] == 1) ? 1 : 0;
 ?>
 
 <!DOCTYPE html>
@@ -386,6 +400,23 @@ $dashboard_url = ($usuario['tipo_tea'] == 1) ? 'index_tea.php' : 'index.php';
             <a href="#" id="linkDescarga" class="btn-descarga" download>📥 Descargar Guía de Estudio</a>
         </div>
 
+        <div class="tarjeta-panel" id="panelSala">
+            <h4>🔗 Pizarra Compartida del Profesor</h4>
+            <div id="estadoSala">
+                <?php if ($sala_activa): ?>
+                    <p>El profesor compartió una pizarra en vivo.</p>
+                    <div style="text-align:center; margin:12px 0;">
+                        <span style="font-size:2em; font-weight:bold; letter-spacing:4px; color:#b91c1c;"><?php echo htmlspecialchars($sala_activa['codigo']); ?></span>
+                    </div>
+                    <a href="pizarra.php?sala=<?php echo urlencode($sala_activa['codigo']); ?>&materia=<?php echo urlencode($materia_curso_php); ?>" class="btn-descarga">🎨 Entrar a la pizarra</a>
+                <?php elseif ($es_profesor): ?>
+                    <p>Si abres una sala desde la pizarra, su código aparecerá aquí para tus estudiantes inscritos.</p>
+                <?php else: ?>
+                    <p>Aún no hay una pizarra compartida. Pregunta a tu profesor por el código.</p>
+                <?php endif; ?>
+            </div>
+        </div>
+
         <div class="tarjeta-panel">
             <h4>🎨 Pizarra Virtual Inclusiva</h4>
             <p>Descompón fórmulas, arma diagramas de flujo y practica los ejercicios de la clase antes de tu evaluación.</p>
@@ -662,6 +693,43 @@ var pizarraTimer = setTimeout(function() {
     var s3 = document.getElementById('step3');
     if (s3) { s3.className = 'paso activo'; }
 }, 60000);
+
+/* ------------------- Panel sala compartida en vivo ------------------- */
+var estadoSalaData = {
+    sala: <?php echo json_encode($sala_activa); ?>,
+    esProfesor: <?php echo $es_profesor; ?>,
+    materia: <?php echo json_encode($materia_curso_php); ?>
+};
+function actualizarPanelSala(){
+    var panel = document.getElementById('panelSala');
+    var estado = document.getElementById('estadoSala');
+    if (!panel || !estado) return;
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'ajax_pizarra.php?accion=sala_curso&materia=' + encodeURIComponent(estadoSalaData.materia), true);
+    xhr.onreadystatechange = function(){
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            try {
+                var r = JSON.parse(xhr.responseText);
+                if (!r.ok) return;
+                var s = r.sala;
+                var html;
+                if (s) {
+                    html = '<p>El profesor compartió una pizarra en vivo.</p>' +
+                           '<div style="text-align:center; margin:12px 0;">' +
+                           '<span style="font-size:2em; font-weight:bold; letter-spacing:4px; color:#b91c1c;">' + s.codigo + '</span></div>' +
+                           '<a href="pizarra.php?sala=' + encodeURIComponent(s.codigo) + '&materia=' + encodeURIComponent(estadoSalaData.materia) + '" class="btn-descarga">🎨 Entrar a la pizarra</a>';
+                } else if (estadoSalaData.esProfesor) {
+                    html = '<p>Si abres una sala desde la pizarra, su código aparecerá aquí para tus estudiantes inscritos.</p>';
+                } else {
+                    html = '<p>Aún no hay una pizarra compartida. Pregunta a tu profesor por el código.</p>';
+                }
+                if (estado.innerHTML !== html) estado.innerHTML = html;
+            } catch(e){}
+        }
+    };
+    xhr.send();
+}
+if (estadoSalaData.materia) setInterval(actualizarPanelSala, 4000);
 </script>
 
 <div class="modal-overlay" id="modalPerfilEst">
