@@ -1,6 +1,8 @@
 <?php
 session_start();
 include 'conexion.php';
+require_once 'pizarra_bd.php';
+pizarra_crear_tablas($conn);
 
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: login.php");
@@ -15,13 +17,39 @@ $dashboard_url = ($usuario['tipo_tea'] == 1) ? 'index_tea.php' : 'index.php';
 $modo_oscuro = $usuario['modo_oscuro'];
 $fuente_grande = $usuario['fuente_grande'];
 $pictos = $usuario['pictogramas_activos'];
+
+// ---- Modo sala colaborativa ----
+$sala_codigo = isset($_GET['sala']) ? trim($_GET['sala']) : '';
+$sala_info = null;
+$trazos_iniciales = [];
+if ($sala_codigo !== '') {
+    $stmt = $conn->prepare("SELECT s.id, s.codigo, s.materia, s.epoca, s.creador_id, u.nombre AS creador_nombre
+                            FROM pizarra_salas s LEFT JOIN usuarios u ON u.id = s.creador_id
+                            WHERE s.codigo = ? AND s.activa = 1");
+    $stmt->bind_param('s', $sala_codigo);
+    $stmt->execute();
+    $sala_info = $stmt->get_result()->fetch_assoc();
+    if ($sala_info) {
+        $sala_id = (int) $sala_info['id'];
+        $conn->query("UPDATE pizarra_salas SET ultima_actividad = NOW() WHERE id = $sala_id");
+        $r = $conn->query("SELECT id, tipo, datos FROM pizarra_trazos WHERE sala_id = $sala_id ORDER BY id ASC LIMIT 2000");
+        if ($r) {
+            while ($row = $r->fetch_assoc()) {
+                $lineas = json_decode($row['datos'], true);
+                if (!is_array($lineas)) continue;
+                $lineas['__id'] = (int) $row['id'];
+                $trazos_iniciales[] = $lineas;
+            }
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pizarra Virtual Inclusiva - Academia JB</title>
+<title><?php echo $sala_info ? 'Sala ' . $sala_info['codigo'] . ' - ' : ''; ?>Pizarra Virtual Inclusiva - Academia JB</title>
 <style>
 :root{
     --fondo-lienzo:#FBF7EF;            /* crema cálido: libre de sobrecarga */
@@ -70,6 +98,63 @@ body{
     gap:6px;
 }
 .barra-superior a.atras:hover{filter:brightness(.96);}
+
+.barra-sala{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:10px;
+    padding:10px 16px;
+    background:var(--fondo-toolbar);
+    border-bottom:2px solid <?php echo $modo_oscuro ? '#333' : '#d5cfc0'; ?>;
+}
+.info-sala{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--fondo-app);
+    padding:8px 14px;
+    border-radius:12px;
+    font-weight:bold;
+    border-left:4px solid var(--acento-2);
+}
+.info-sala .codigo{
+    background:var(--acento);
+    color:#fff;
+    padding:3px 10px;
+    border-radius:8px;
+    letter-spacing:2px;
+    font-size:1.15em;
+}
+.barra-sala input[type=text]{
+    border:2px solid <?php echo $modo_oscuro ? '#555' : '#c3bba6'; ?>;
+    border-radius:10px;
+    padding:9px 12px;
+    font-size:1.05em;
+    text-transform:uppercase;
+    letter-spacing:2px;
+    width:170px;
+    background:var(--fondo-app);
+    color:var(--texto);
+}
+.aviso-sala{
+    font-size:.85em;
+    color:var(--texto-suave);
+    line-height:1.4;
+}
+.boton-sala{
+    border:none;
+    border-radius:10px;
+    padding:9px 14px;
+    font-weight:bold;
+    cursor:pointer;
+    font-size:.95em;
+}
+.boton-sala.crear{background:var(--acento-2); color:#fff;}
+.boton-sala.unir{background:#8A7F9F; color:#fff;}
+.boton-sala.salir{background:#C96F6F; color:#fff;}
+.chip-arrastre.disabled, .boton-plantilla.disabled{opacity:.45; pointer-events:none;}
 
 .mini-aviso{
     font-size:.8em;
@@ -245,6 +330,24 @@ canvas#pizarra{
     <a class="atras" href="<?php echo $dashboard_url; ?>">⬅ Volver</a>
 </div>
 
+<div class="barra-sala" id="barraSala">
+    <?php if ($sala_info): ?>
+        <div class="info-sala">
+            <span>🖥️ Sala:</span>
+            <span class="codigo"><?php echo htmlspecialchars($sala_codigo); ?></span>
+            <span>· <?php echo htmlspecialchars(ucfirst($sala_info['materia'] ?? 'Libre')); ?></span>
+            <span>· 👨‍🏫 <?php echo htmlspecialchars($sala_info['creador_nombre'] ?? 'Profesor'); ?></span>
+        </div>
+        <div id="indicadorSincronizacion" class="aviso-sala">Conectado · sincronizando…</div>
+        <button class="boton-sala salir" id="btnSalir">Salir de la sala</button>
+    <?php else: ?>
+        <input type="text" id="inputCodigo" placeholder="Código de sala" maxlength="6" autocomplete="off">
+        <button class="boton-sala unir" id="btnUnirse">🔑 Unirse a sala</button>
+        <button class="boton-sala crear" id="btnCrearSala">🆕 Crear sala</button>
+        <div class="aviso-sala">Muestra el código a tu estudiante o compártelo para dibujar juntos en tiempo real.</div>
+    <?php endif; ?>
+</div>
+
 <div class="toolbar">
     <div class="grupo-tools">
         <button class="tool activo" id="tool-lapiz" data-tool="lapiz">
@@ -387,14 +490,140 @@ COLORES.forEach(function(c, i){
 });
 
 /* ------------------- Estado del lienzo ------------------- */
-var trazos = [];            // lista de objetos dibujados
+var SALA_CODIGO = '<?php echo $sala_codigo; ?>';
+var SALA_ID = <?php echo $sala_info ? (int) $sala_info['id'] : 0; ?>;
+var SALA_EPOCA = <?php echo $sala_info ? (int) $sala_info['epoca'] : 0; ?>;
+var SALA_MATERIA = '<?php echo $sala_info ? $sala_info['materia'] : ''; ?>';
+var USUARIO_ID = <?php echo (int) $id_usuario; ?>;
+
+var trazos = <?php echo json_encode($trazos_iniciales); ?>;
 var elementosPlantilla = [];// elementos de plantilla (fondo)
 var historial = [];         // para deshacer
-var plantillaActiva = MATERIA_INICIAL;
+var plantillaActiva = (SALA_ID && SALA_MATERIA) ? SALA_MATERIA : MATERIA_INICIAL;
 var toolActivo = 'lapiz';
 var grosor = 4;
 var dibujando = false;
 var actual = null;
+var ultimoIdSync = 0;
+
+if (trazos.length) {
+    trazos.forEach(function(t){ if (t.__id && t.__id > ultimoIdSync) ultimoIdSync = t.__id; });
+}
+
+/* ------------------- Modo sala collaborate ------------------- */
+function esSala(){ return !!SALA_ID; }
+
+function guardaUltimoTrazo(){
+    if (!esSala()) return;
+    var t = trazos[trazos.length - 1];
+    if (!t || t.__id) return;
+    try {
+        var copia = JSON.parse(JSON.stringify(t));
+        delete copia.__id;
+        delete copia.__usuario;
+        var body = 'accion=agregar_trazo&sala_id=' + SALA_ID + '&tipo=' + encodeURIComponent(t.tipo || '') +
+                   '&datos=' + encodeURIComponent(JSON.stringify(copia));
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'ajax_pizarra.php', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onreadystatechange = function(){
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    var r = JSON.parse(xhr.responseText);
+                    if (r.ok && r.id) { t.__id = r.id; ultimoIdSync = Math.max(ultimoIdSync, r.id); }
+                } catch(e){}
+            }
+        };
+        xhr.send(body);
+    } catch(e){}
+}
+
+function sincronizarSala(){
+    if (!esSala()) return;
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'ajax_pizarra.php?accion=sincronizar&sala_id=' + SALA_ID + '&ultimo_id=' + ultimoIdSync + '&epoca=' + SALA_EPOCA, true);
+    xhr.onreadystatechange = function(){
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            try {
+                var r = JSON.parse(xhr.responseText);
+                if (!r.ok) return;
+                var ind = document.getElementById('indicadorSincronizacion');
+                if (ind) ind.innerText = 'Conectado · al día';
+                var ruta = r.epoca !== SALA_EPOCA;   // hubo limpieza en la sala
+                if (ruta) {
+                    trazos = [];
+                    ultimoIdSync = 0;
+                    SALA_EPOCA = r.epoca;
+                }
+                var nuevos = 0;
+                (r.trazos || []).forEach(function(tr){
+                    if (!ruta && tr.id <= ultimoIdSync) return;
+                    var t = tr.datos;
+                    if (!t || t.tipo === 'borrador') return;
+                    if (t.__id === undefined) t.__id = tr.id;
+                    if (ultimoIdSync < tr.id) ultimoIdSync = tr.id;
+                    trazos.push(t);
+                    nuevos++;
+                });
+                if (nuevos || ruta) renderTodo();
+            } catch(e){}
+        }
+    };
+    xhr.send();
+}
+
+if (esSala()) {
+    setInterval(sincronizarSala, 2500);
+
+    document.querySelectorAll('.boton-plantilla').forEach(function(b){
+        b.classList.add('disabled');
+        if (b.getAttribute('data-platilla') === plantillaActiva) b.classList.remove('disabled');
+    });
+    var toolBorrador = document.getElementById('tool-borrador');
+    if (toolBorrador) toolBorrador.style.display = 'none';
+} else {
+    var btnCrearSala = document.getElementById('btnCrearSala');
+    if (btnCrearSala) btnCrearSala.addEventListener('click', function(){
+        var m = plantillaActiva === 'blanco' ? 'matematica' : plantillaActiva;
+        var body = 'accion=crear_sala&materia=' + encodeURIComponent(m);
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'ajax_pizarra.php', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onreadystatechange = function(){
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    var r = JSON.parse(xhr.responseText);
+                    if (r.ok) window.location.href = 'pizarra.php?sala=' + r.codigo + '&materia=' + r.materia;
+                    else alert(r.error || 'No se pudo crear la sala');
+                } catch(e){}
+            }
+        };
+        xhr.send(body);
+    });
+
+    var btnUnirse = document.getElementById('btnUnirse');
+    if (btnUnirse) btnUnirse.addEventListener('click', function(){
+        var c = (document.getElementById('inputCodigo').value || '').trim().toUpperCase();
+        if (c.length < 4) { alert('Escribe el código de la sala'); return; }
+        var body = 'accion=unirse_sala&codigo=' + encodeURIComponent(c);
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'ajax_pizarra.php', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onreadystatechange = function(){
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    var r = JSON.parse(xhr.responseText);
+                    if (r.ok) window.location.href = 'pizarra.php?sala=' + r.codigo + '&materia=' + r.materia;
+                    else alert(r.error || 'No se pudo unir');
+                } catch(e){}
+            }
+        };
+        xhr.send(body);
+    });
+}
+
+var btnSalir = document.getElementById('btnSalir');
+if (btnSalir) btnSalir.addEventListener('click', function(){ window.location.href = 'pizarra.php'; });
 
 /* ------------------- Menú colores para texto ------------------- */
 function generaBurbujaColor(c){
@@ -736,6 +965,7 @@ function iniciar(e){
                 lineas: texto.split('\n')
             });
             renderTodo();
+            guardaUltimoTrazo();
         }
         return;
     }
@@ -773,6 +1003,7 @@ function finalizar(e){
     actual = null;
     historial.push(trazos.length);
     if (historial.length > 40) historial.shift();
+    guardaUltimoTrazo();
 }
 
 canvas.addEventListener('mousedown', iniciar);
@@ -782,24 +1013,33 @@ canvas.addEventListener('touchstart', iniciar, { passive: false });
 canvas.addEventListener('touchmove', mover, { passive: false });
 window.addEventListener('touchend', finalizar);
 
-/* ------------------- Botón deshacer ------------------- */
-document.getElementById('btnDeshacer').addEventListener('click', function(){
-    if (historial.length > 0) {
-        var n = historial.pop();
-        trazos.splice(n - 1);
-        renderTodo();
-    } else {
-        trazos = [];
-        renderTodo();
-    }
-});
+/* ------------------- Botón deshacer (solo modo individual) ------------------- */
+var btnDeshacer = document.getElementById('btnDeshacer');
+if (esSala()) { if (btnDeshacer) btnDeshacer.disabled = true; }
+else if (btnDeshacer) {
+    btnDeshacer.addEventListener('click', function(){
+        if (historial.length > 0) {
+            var n = historial.pop();
+            trazos.splice(n - 1);
+            renderTodo();
+        } else {
+            trazos = [];
+            renderTodo();
+        }
+    });
+}
 
 /* ------------------- Botón limpiar ------------------- */
 document.getElementById('btnLimpiar').addEventListener('click', function(){
-    if (confirm('¿Limpiar todo el lienzo?')) {
-        trazos = [];
-        historial = [];
-        renderTodo();
+    if (!confirm('¿Limpiar todo el lienzo' + (esSala() ? ' para todos' : '') + '?')) return;
+    trazos = [];
+    historial = [];
+    renderTodo();
+    if (esSala()) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'ajax_pizarra.php', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.send('accion=limpiar&sala_id=' + SALA_ID);
     }
 });
 
@@ -901,15 +1141,15 @@ canvas.addEventListener('drop', function(e){
         trazos.push({ tipo:'mano', x:p.x, y:p.y, color:color, grosor:grosor });
     }
     renderTodo();
+    guardaUltimoTrazo();
 });
 
 /* ------------------- Inicializar con plantilla por materia ------------------- */
-if (MATERIA_INICIAL !== 'blanco') {
+if (plantillaActiva !== 'blanco') {
     document.querySelectorAll('.boton-plantilla').forEach(function(b){
         b.classList.remove('activo');
-        if (b.getAttribute('data-platilla') === MATERIA_INICIAL) b.classList.add('activo');
+        if (b.getAttribute('data-platilla') === plantillaActiva) b.classList.add('activo');
     });
-    plantillaActiva = MATERIA_INICIAL;
 }
 renderTodo();
 
