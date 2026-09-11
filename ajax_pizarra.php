@@ -14,6 +14,9 @@ if (!isset($_SESSION['usuario_id'])) {
 $id_usuario = (int) $_SESSION['usuario_id'];
 $accion = $_POST['accion'] ?? $_GET['accion'] ?? '';
 
+$res_tipo = $conn->query("SELECT tipo_tea FROM usuarios WHERE id = $id_usuario");
+$es_profesor = ($res_tipo && ($fila_tipo = $res_tipo->fetch_assoc())) ? ((int) $fila_tipo['tipo_tea'] === 1) : false;
+
 // ---------- SALA ACTIVA DE UN CURSO ----------
 if ($accion === 'sala_curso') {
     $materia = substr(trim($_GET['materia'] ?? ''), 0, 50);
@@ -41,6 +44,10 @@ if ($accion === 'sala_curso') {
 
 // ---------- CREAR SALA ----------
 if ($accion === 'crear_sala') {
+    if (!$es_profesor) {
+        echo json_encode(['ok' => 0, 'error' => 'Solo el profesor puede crear salas']);
+        exit;
+    }
     $materias = ['matematica', 'fisica', 'quimica', 'aeronautica', 'informatica', 'blanco'];
     $materia = $_POST['materia'] ?? 'blanco';
     if (!in_array($materia, $materias, true)) $materia = 'blanco';

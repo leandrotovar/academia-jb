@@ -17,6 +17,7 @@ $dashboard_url = ($usuario['tipo_tea'] == 1) ? 'index_tea.php' : 'index.php';
 $modo_oscuro = $usuario['modo_oscuro'];
 $fuente_grande = $usuario['fuente_grande'];
 $pictos = $usuario['pictogramas_activos'];
+$es_profesor = ($usuario['tipo_tea'] == 1);
 
 // ---- Modo sala colaborativa ----
 $sala_codigo = isset($_GET['sala']) ? trim($_GET['sala']) : '';
@@ -343,8 +344,12 @@ canvas#pizarra{
     <?php else: ?>
         <input type="text" id="inputCodigo" placeholder="Código de sala" maxlength="6" autocomplete="off">
         <button class="boton-sala unir" id="btnUnirse">🔑 Unirse a sala</button>
-        <button class="boton-sala crear" id="btnCrearSala">🆕 Crear sala</button>
-        <div class="aviso-sala">Muestra el código a tu estudiante o compártelo para dibujar juntos en tiempo real.</div>
+        <?php if ($es_profesor): ?>
+            <button class="boton-sala crear" id="btnCrearSala">🆕 Crear sala</button>
+            <div class="aviso-sala">Muestra el código a tu estudiante o compártelo para dibujar juntos en tiempo real.</div>
+        <?php else: ?>
+            <div class="aviso-sala">Pide el código a tu profesor e ingrésalo para entrar a la pizarra compartida.</div>
+        <?php endif; ?>
     <?php endif; ?>
 </div>
 

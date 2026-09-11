@@ -25,6 +25,18 @@ $res_historial = $conn->query("
     ORDER BY i.fecha_inscripcion DESC
 ");
 
+require_once 'pizarra_bd.php';
+pizarra_crear_tablas($conn);
+$salas_materia = [];
+$res_salas = $conn->query("SELECT materia, codigo FROM pizarra_salas WHERE activa = 1 ORDER BY id DESC");
+if ($res_salas) {
+    while ($fila_sala = $res_salas->fetch_assoc()) {
+        if (!isset($salas_materia[$fila_sala['materia']])) {
+            $salas_materia[$fila_sala['materia']] = $fila_sala['codigo'];
+        }
+    }
+}
+
 if (isset($_GET['cambiar_ajuste'])) {
     $ajuste = $_GET['cambiar_ajuste'];
     if (in_array($ajuste, ['fuente_grande','pictogramas_activos','modo_oscuro','temporizador_visual'])) {
@@ -146,6 +158,59 @@ if (isset($_GET['cambiar_ajuste'])) {
             font-size: <?php echo $usuario['fuente_grande'] ? '18px' : '14px'; ?>;
             color: <?php echo $usuario['modo_oscuro'] ? '#aaa' : '#444'; ?>;
         }
+
+        .panel-pizarras {
+            background: <?php echo $usuario['modo_oscuro'] ? '#1f1f1f' : '#ffffff'; ?>;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+        .panel-pizarras h4 {
+            margin: 0 0 5px 0;
+            color: <?php echo $usuario['modo_oscuro'] ? '#4fc3f7' : '#1a426e'; ?>;
+            font-size: <?php echo $usuario['fuente_grande'] ? '24px' : '20px'; ?>;
+        }
+        .panel-pizarras > p {
+            margin: 0 0 15px 0;
+            font-size: <?php echo $usuario['fuente_grande'] ? '18px' : '14px'; ?>;
+            color: <?php echo $usuario['modo_oscuro'] ? '#aaa' : '#444'; ?>;
+        }
+        .pizarras-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 14px;
+        }
+        .pizarra-item {
+            border: 2px solid <?php echo $usuario['modo_oscuro'] ? '#333' : '#dbe7f3'; ?>;
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-start;
+        }
+        .pizarra-item strong {
+            color: <?php echo $usuario['modo_oscuro'] ? '#fff' : '#1a426e'; ?>;
+        }
+        .codigo-sala {
+            font-size: <?php echo $usuario['fuente_grande'] ? '22px' : '18px'; ?>;
+            font-weight: bold;
+            letter-spacing: 3px;
+            color: #b91c1c;
+        }
+        .btn-mini {
+            display: inline-block;
+            background: #1a426e;
+            color: white;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: <?php echo $usuario['fuente_grande'] ? '16px' : '14px'; ?>;
+        }
+        .btn-mini.alt { background: #6B9E5B; }
+        .btn-mini.nueva { background: #8A7F9F; }
 
         .ajustes-rapidos {
             background: <?php echo $usuario['modo_oscuro'] ? '#1f1f1f' : '#e3f2fd'; ?>;
@@ -302,6 +367,30 @@ if (isset($_GET['cambiar_ajuste'])) {
             <p>Palabras y概念</p>
         </a>
     </div>
+
+    <?php if ($usuario['tipo_tea'] == 1): ?>
+    <div class="panel-pizarras">
+        <h4>🎨 Pizarras en vivo</h4>
+        <p>Crea una sala por materia y comparte el código con tus estudiantes inscritos.</p>
+        <div class="pizarras-grid">
+            <?php foreach ($materias_map as $clave => $nombre):
+                $codigo_sala = isset($salas_materia[$clave]) ? $salas_materia[$clave] : null; ?>
+                <div class="pizarra-item">
+                    <strong><?php echo htmlspecialchars($nombre); ?></strong>
+                    <?php if ($codigo_sala): ?>
+                        <span class="codigo-sala"><?php echo htmlspecialchars($codigo_sala); ?></span>
+                        <div>
+                            <a href="pizarra.php?sala=<?php echo urlencode($codigo_sala); ?>&materia=<?php echo urlencode($clave); ?>" class="btn-mini">Entrar</a>
+                            <a href="pizarra.php?materia=<?php echo urlencode($clave); ?>" class="btn-mini nueva">Nueva sala</a>
+                        </div>
+                    <?php else: ?>
+                        <a href="pizarra.php?materia=<?php echo urlencode($clave); ?>" class="btn-mini alt">Crear sala</a>
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <?php endif; ?>
 
     <div class="historial-notas">
         <h4>📋 Mis Cursos</h4>
