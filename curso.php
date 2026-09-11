@@ -24,7 +24,7 @@ if ($materia_curso_php !== '') {
     $stmt->execute();
     $sala_activa = $stmt->get_result()->fetch_assoc();
 }
-$es_profesor = ($usuario['tipo_tea'] == 1) ? 1 : 0;
+$es_profesor = ($usuario['rol'] === 'docente' || $usuario['rol'] === 'administrador') ? 1 : 0;
 ?>
 
 <!DOCTYPE html>

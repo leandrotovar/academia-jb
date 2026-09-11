@@ -14,8 +14,9 @@ if (!isset($_SESSION['usuario_id'])) {
 $id_usuario = (int) $_SESSION['usuario_id'];
 $accion = $_POST['accion'] ?? $_GET['accion'] ?? '';
 
-$res_tipo = $conn->query("SELECT tipo_tea FROM usuarios WHERE id = $id_usuario");
-$es_profesor = ($res_tipo && ($fila_tipo = $res_tipo->fetch_assoc())) ? ((int) $fila_tipo['tipo_tea'] === 1) : false;
+$res_tipo = $conn->query("SELECT rol FROM usuarios WHERE id = $id_usuario");
+$rol_usuario = ($res_tipo && ($fila_tipo = $res_tipo->fetch_assoc())) ? $fila_tipo['rol'] : '';
+$es_profesor = in_array($rol_usuario, ['docente', 'administrador'], true);
 
 // ---------- SALA ACTIVA DE UN CURSO ----------
 if ($accion === 'sala_curso') {

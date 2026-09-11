@@ -17,7 +17,7 @@ $dashboard_url = ($usuario['tipo_tea'] == 1) ? 'index_tea.php' : 'index.php';
 $modo_oscuro = $usuario['modo_oscuro'];
 $fuente_grande = $usuario['fuente_grande'];
 $pictos = $usuario['pictogramas_activos'];
-$es_profesor = ($usuario['tipo_tea'] == 1);
+$es_profesor = ($usuario['rol'] === 'docente' || $usuario['rol'] === 'administrador');
 
 // ---- Modo sala colaborativa ----
 $sala_codigo = isset($_GET['sala']) ? trim($_GET['sala']) : '';

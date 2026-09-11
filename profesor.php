@@ -45,6 +45,18 @@ while ($rmp = $res_pm->fetch_assoc()) {
     $rmp['total_inscritos'] = count($alumnos);
     $materias_profesor[] = $rmp;
 }
+
+require_once 'pizarra_bd.php';
+pizarra_crear_tablas($conn);
+$salas_profesor = [];
+$res_sp = $conn->query("SELECT materia, codigo FROM pizarra_salas WHERE activa = 1 ORDER BY id DESC");
+if ($res_sp) {
+    while ($fs = $res_sp->fetch_assoc()) {
+        if (!isset($salas_profesor[$fs['materia']])) {
+            $salas_profesor[$fs['materia']] = $fs['codigo'];
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -256,6 +268,64 @@ while ($rmp = $res_pm->fetch_assoc()) {
                 transition-duration: 0.01ms !important;
             }
         }
+
+        .pizarras-panel {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        .pizarras-panel h3 {
+            color: #1a426e;
+            margin-top: 0;
+            margin-bottom: 6px;
+        }
+        .pizarras-panel > p {
+            color: #555;
+            font-size: 15px;
+            margin: 0 0 18px 0;
+        }
+        .pizarras-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 15px;
+        }
+        .pizarra-card {
+            border: 2px solid #dbe7f3;
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .pizarra-card h4 {
+            margin: 0;
+            color: #1a426e;
+            font-size: 18px;
+        }
+        .codigo-sala {
+            font-size: 22px;
+            font-weight: bold;
+            letter-spacing: 4px;
+            color: #b91c1c;
+        }
+        .btn-pizarra {
+            display: inline-block;
+            background: #1a426e;
+            color: white;
+            border: none;
+            text-decoration: none;
+            padding: 9px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .btn-pizarra.crear { background: #6B9E5B; }
+        .btn-pizarra.nueva { background: #8A7F9F; }
+        .btn-pizarra:hover { filter: brightness(0.94); }
     </style>
 </head>
 <body>
@@ -343,6 +413,32 @@ while ($rmp = $res_pm->fetch_assoc()) {
             </div>
         <?php endif; ?>
     </div>
+
+    <!-- PIZARRAS EN VIVO -->
+    <?php if (!empty($materias_profesor)): ?>
+    <div class="pizarras-panel">
+        <h3>🎨 Pizarras en vivo</h3>
+        <p>Crea una sala por curso y comparte el código con los estudiantes inscritos. Solo el profesor puede crear salas.</p>
+        <div class="pizarras-grid">
+            <?php foreach ($materias_profesor as $mp):
+                $clave = $mp['materia_clave'];
+                $codigo_sala = isset($salas_profesor[$clave]) ? $salas_profesor[$clave] : null; ?>
+                <div class="pizarra-card">
+                    <h4><?php echo $mp['icono'] . ' ' . htmlspecialchars($mp['curso_nombre']); ?></h4>
+                    <?php if ($codigo_sala): ?>
+                        <span class="codigo-sala"><?php echo htmlspecialchars($codigo_sala); ?></span>
+                        <div>
+                            <a href="pizarra.php?sala=<?php echo urlencode($codigo_sala); ?>&materia=<?php echo urlencode($clave); ?>" class="btn-pizarra">Entrar</a>
+                            <button class="btn-pizarra nueva" onclick="crearSalaProfesor('<?php echo $clave; ?>')">Nueva sala</button>
+                        </div>
+                    <?php else: ?>
+                        <button class="btn-pizarra crear" onclick="crearSalaProfesor('<?php echo $clave; ?>')">🆕 Crear sala</button>
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <?php endif; ?>
 </div>
 
 <!-- Modal Perfil del Profesor -->
@@ -444,6 +540,28 @@ function toggleCurso(materia) {
         tabla.style.display = 'none';
         if (flecha) flecha.classList.remove('abierto');
     }
+}
+
+function crearSalaProfesor(materia) {
+    if (!confirm('¿Crear una sala de pizarra para este curso? Se desactivará la sala anterior si existía.')) return;
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'ajax_pizarra.php', true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            try {
+                const r = JSON.parse(xhr.responseText);
+                if (r.ok) {
+                    window.location.href = 'pizarra.php?sala=' + encodeURIComponent(r.codigo) + '&materia=' + encodeURIComponent(r.materia);
+                } else {
+                    alert(r.error || 'No se pudo crear la sala');
+                }
+            } catch (e) {
+                alert('Error al crear la sala');
+            }
+        }
+    };
+    xhr.send('accion=crear_sala&materia=' + encodeURIComponent(materia));
 }
 
 function abrirMonitoreo(usuarioId, inscripcionId, nombre, email, notas) {
