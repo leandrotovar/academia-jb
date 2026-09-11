@@ -263,6 +263,15 @@ if (isset($_GET['cambiar_ajuste'])) {
             <p>Entra aquí para ver tus lecciones disponibles hoy.</p>
         </a>
 
+        <!-- Tarjeta Pizarra Virtual Inclusiva -->
+        <a href="pizarra.php" class="tarjeta">
+            <?php if ($usuario['pictogramas_activos'] == 1): ?>
+                <div style="font-size: 50px; margin-bottom: 10px;">🎨</div>
+            <?php endif; ?>
+            <h3>Pizarra Virtual</h3>
+            <p>Practica fórmulas, diagramas y ejercicios con nuestro lienzo inclusivo.</p>
+        </a>
+
         <!-- Tarjeta 2: Mi Progreso -->
         <a href="progreso.php" class="tarjeta">
             <?php if ($usuario['pictogramas_activos'] == 1): ?>

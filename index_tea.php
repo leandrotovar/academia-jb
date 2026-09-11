@@ -278,6 +278,12 @@ if (isset($_GET['cambiar_ajuste'])) {
             <p>Ver mis lecciones</p>
         </a>
 
+        <a href="pizarra.php" class="tarjeta">
+            <div class="icono">🎨</div>
+            <h3>Pizarra</h3>
+            <p>Practicar dibujando</p>
+        </a>
+
         <a href="progreso.php" class="tarjeta">
             <div class="icono">🏆</div>
             <h3>Mi Progreso</h3>

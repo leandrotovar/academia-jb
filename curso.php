@@ -339,7 +339,9 @@ $dashboard_url = ($usuario['tipo_tea'] == 1) ? 'index_tea.php' : 'index.php';
         <span class="paso-sep">→</span>
         <span class="paso inactivo" id="step2">2️⃣ Lectura</span>
         <span class="paso-sep">→</span>
-        <span class="paso inactivo" id="step3">3️⃣ Evaluación</span>
+        <span class="paso inactivo" id="step3">3️⃣ Pizarra Virtual</span>
+        <span class="paso-sep">→</span>
+        <span class="paso inactivo" id="step4">4️⃣ Evaluación</span>
     </div>
 
     <?php if ($usuario['temporizador_visual'] == 1): ?>
@@ -382,6 +384,12 @@ $dashboard_url = ($usuario['tipo_tea'] == 1) ? 'index_tea.php' : 'index.php';
             <h4>📁 Guía Didáctica (PDF)</h4>
             <p>Descarga la guía de estudio en PDF para repasar sin conexión.</p>
             <a href="#" id="linkDescarga" class="btn-descarga" download>📥 Descargar Guía de Estudio</a>
+        </div>
+
+        <div class="tarjeta-panel">
+            <h4>🎨 Pizarra Virtual Inclusiva</h4>
+            <p>Descompón fórmulas, arma diagramas de flujo y practica los ejercicios de la clase antes de tu evaluación.</p>
+            <a href="#" id="linkPizarra" class="btn-descarga">🎨 Abrir Pizarra Virtual</a>
         </div>
 
         <div class="tarjeta-panel">
@@ -515,6 +523,9 @@ if (bancoLecciones[materiaClave]) {
     document.getElementById("linkDescarga").setAttribute("download", "Guia_Estudio_" + materiaClave + ".pdf");
     document.getElementById("linkDescarga").setAttribute("href", matDB.pdf || "guias/Guia_Estudio_" + materiaClave + ".pdf");
 
+    var linkPizarra = document.getElementById("linkPizarra");
+    if (linkPizarra) linkPizarra.setAttribute("href", "pizarra.php?materia=" + materiaClave);
+
     totalPreguntas = cursoData.preguntas.length;
     const container = document.getElementById("contenedorEvaluacion");
     container.innerHTML = "";
@@ -593,8 +604,8 @@ function procesarEvaluacion() {
     resultadoDiv.style.display = "block";
 
     if (aprobado) {
-        var s3 = document.getElementById('step3');
-        if (s3) { s3.className = 'paso completado'; s3.innerText = '✅ Completado'; }
+        var s4 = document.getElementById('step4');
+        if (s4) { s4.className = 'paso completado'; s4.innerText = '✅ Completado'; }
         localStorage.removeItem("curso_bloqueado");
         localStorage.removeItem("curso_nombre");
 
@@ -646,6 +657,11 @@ var stepTimer = setTimeout(function() {
     var s2 = document.getElementById('step2');
     if (s2) { s2.className = 'paso activo'; }
 }, 30000);
+
+var pizarraTimer = setTimeout(function() {
+    var s3 = document.getElementById('step3');
+    if (s3) { s3.className = 'paso activo'; }
+}, 60000);
 </script>
 
 <div class="modal-overlay" id="modalPerfilEst">
