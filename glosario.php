@@ -11,7 +11,9 @@ if (!isset($_SESSION['usuario_id'])) {
 $id_usuario = $_SESSION['usuario_id']; 
 $res_user = $conn->query("SELECT * FROM usuarios WHERE id = $id_usuario");
 $usuario = $res_user->fetch_assoc();
-$dashboard_url = ($usuario['tipo_tea'] == 1) ? 'index_tea.php' : 'index.php';
+$dashboard_url = ($usuario['rol'] === 'docente') ? 'profesor.php'
+    : (($usuario['rol'] === 'administrador') ? 'administrador.php'
+    : (($usuario['tipo_tea'] == 1) ? 'index_tea.php' : 'index.php'));
 ?>
 
 <!DOCTYPE html>
