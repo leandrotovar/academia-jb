@@ -340,13 +340,15 @@ canvas#pizarra{
             <span class="codigo"><?php echo htmlspecialchars($sala_codigo); ?></span>
             <span>· <?php echo htmlspecialchars(ucfirst($sala_info['materia'] ?? 'Libre')); ?></span>
             <span>· 👨‍🏫 <?php echo htmlspecialchars($sala_info['creador_nombre'] ?? 'Profesor'); ?></span>
+            <span class="aviso-sala">· 👤 Usted: <?php echo htmlspecialchars($usuario['nombre']); ?></span>
         </div>
         <div id="indicadorSincronizacion" class="aviso-sala">Conectado · sincronizando…</div>
         <button class="boton-sala salir" id="btnSalir">Salir de la sala</button>
-    <?php else: ?>
-        <input type="text" id="inputCodigo" placeholder="Código de sala" maxlength="6" autocomplete="off">
-        <button class="boton-sala unir" id="btnUnirse">🔑 Unirse a sala</button>
-        <?php if ($es_profesor): ?>
+<?php else: ?>
+            <input type="text" id="inputCodigo" placeholder="Código de sala" maxlength="6" autocomplete="off">
+            <button class="boton-sala unir" id="btnUnirse">🔑 Unirse a sala</button>
+            <div class="aviso-sala">👤 Logueado como: <strong><?php echo htmlspecialchars($usuario['nombre']); ?></strong></div>
+            <?php if ($es_profesor): ?>
             <button class="boton-sala crear" id="btnCrearSala">🆕 Crear sala</button>
             <div class="aviso-sala">Muestra el código a tu estudiante o compártelo para dibujar juntos en tiempo real.</div>
         <?php else: ?>
@@ -631,7 +633,7 @@ if (esSala()) {
 }
 
 var btnSalir = document.getElementById('btnSalir');
-if (btnSalir) btnSalir.addEventListener('click', function(){ window.location.href = 'pizarra.php'; });
+if (btnSalir) btnSalir.addEventListener('click', function(){ window.location.href = '<?php echo $dashboard_url; ?>'; });
 
 /* ------------------- Menú colores para texto ------------------- */
 function generaBurbujaColor(c){
