@@ -135,7 +135,7 @@
         <input type="password" name="password" id="password"
                pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9\s]).{8,}"
                title="La contraseña debe tener al menos 8 caracteres e incluir: mayúscula, minúscula, número y carácter especial." required>
-        <div id="passRequisitos" style="margin-top:8px; font-size:13px; color:#334155; background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:10px; line-height:1.9;">
+        <div id="passRequisitos" style="display:none; margin-top:8px; font-size:13px; color:#334155; background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:10px; line-height:1.9;">
             <div id="reqLong"><span style="color:#94a3b8;">⬜</span> Mínimo 8 caracteres</div>
             <div id="reqMay"><span style="color:#94a3b8;">⬜</span> Al menos una mayúscula (A-Z)</div>
             <div id="reqMin"><span style="color:#94a3b8;">⬜</span> Al menos una minúscula (a-z)</div>
@@ -212,6 +212,13 @@ function revisarRequisitos() {
     }
 }
 inputPass.addEventListener('input', revisarRequisitos);
+inputPass.addEventListener('focus', function(){
+    document.getElementById('passRequisitos').style.display = 'block';
+    revisarRequisitos();
+});
+inputPass.addEventListener('blur', function(){
+    document.getElementById('passRequisitos').style.display = 'none';
+});
 </script>
 
 <?php include 'asistente.php'; ?>
