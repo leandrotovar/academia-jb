@@ -132,7 +132,16 @@
         <input type="email" name="email" pattern="[a-zA-Z0-9._%+\-]+@gmail\.com" title="Solo se permiten correos de Gmail (@gmail.com)" required>
 
         <label>Contraseña (mínimo 8 caracteres):</label>
-        <input type="password" name="password" minlength="8" required>
+        <input type="password" name="password" id="password"
+               pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9\s]).{8,}"
+               title="La contraseña debe tener al menos 8 caracteres e incluir: mayúscula, minúscula, número y carácter especial." required>
+        <div id="passRequisitos" style="margin-top:8px; font-size:13px; color:#334155; background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:10px; line-height:1.9;">
+            <div id="reqLong"><span style="color:#94a3b8;">⬜</span> Mínimo 8 caracteres</div>
+            <div id="reqMay"><span style="color:#94a3b8;">⬜</span> Al menos una mayúscula (A-Z)</div>
+            <div id="reqMin"><span style="color:#94a3b8;">⬜</span> Al menos una minúscula (a-z)</div>
+            <div id="reqNum"><span style="color:#94a3b8;">⬜</span> Al menos un número (0-9)</div>
+            <div id="reqEsp"><span style="color:#94a3b8;">⬜</span> Al menos un carácter especial (!@#$…)</div>
+        </div>
 
         <label>Rol:</label>
         <select name="rol">
@@ -178,6 +187,31 @@ function toggleTEA(esTEA) {
     document.getElementById('teaPrefs').style.display = esTEA ? 'block' : 'none';
 }
 document.getElementById('teaPrefs').style.display = 'none';
+
+var inputPass = document.getElementById('password');
+var textosReq = {
+    reqLong: 'Mínimo 8 caracteres',
+    reqMay: 'Al menos una mayúscula (A-Z)',
+    reqMin: 'Al menos una minúscula (a-z)',
+    reqNum: 'Al menos un número (0-9)',
+    reqEsp: 'Al menos un carácter especial (!@#$…)'
+};
+function revisarRequisitos() {
+    var v = inputPass.value;
+    var estados = {
+        reqLong: v.length >= 8,
+        reqMay: /[A-Z]/.test(v),
+        reqMin: /[a-z]/.test(v),
+        reqNum: /[0-9]/.test(v),
+        reqEsp: /[^A-Za-z0-9\s]/.test(v)
+    };
+    for (var id in estados) {
+        var el = document.getElementById(id);
+        el.style.color = estados[id] ? '#15803d' : '#94a3b8';
+        el.innerHTML = (estados[id] ? '✅' : '⬜') + ' ' + textosReq[id];
+    }
+}
+inputPass.addEventListener('input', revisarRequisitos);
 </script>
 
 <?php include 'asistente.php'; ?>

@@ -1,4 +1,3 @@
-PHP
 <?php
 include 'conexion.php';
 
@@ -16,9 +15,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    // Validar longitud de contraseña
-    if (strlen($password_raw) < 8) {
-        echo "<script>alert('La contraseña debe tener al menos 8 caracteres.'); window.history.back();</script>";
+    // Validar requisitos de contraseña (mín. 8: mayúscula, minúscula, número y especial)
+    if (strlen($password_raw) < 8 ||
+        !preg_match('/[A-Z]/', $password_raw) ||
+        !preg_match('/[a-z]/', $password_raw) ||
+        !preg_match('/[0-9]/', $password_raw) ||
+        !preg_match('/[^A-Za-z0-9\s]/', $password_raw)) {
+        echo "<script>alert('La contraseña debe tener al menos 8 caracteres e incluir: mayúscula, minúscula, número y carácter especial.'); window.history.back();</script>";
         exit();
     }
 
