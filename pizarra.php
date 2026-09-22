@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 include 'conexion.php';
 require_once 'pizarra_bd.php';
@@ -56,7 +56,7 @@ if ($sala_codigo !== '') {
 <style>
 :root{
     --fondo-lienzo:<?php echo $modo_oscuro ? '#1f1f1f' : '#ffffff'; ?>;   /* superficie de dibujo blanca */
-    --fondo-app:<?php echo $modo_oscuro ? '#121212' : '#e8f0fe'; ?>;      /* fondo azul claro como el resto de pestañas */
+    --fondo-app:<?php echo $modo_oscuro ? '#121212' : '#e8f0fe'; ?>;      /* fondo azul claro como el resto de pestaÃ±as */
     --fondo-toolbar:<?php echo $modo_oscuro ? '#1f1f1f' : '#e3f2fd'; ?>;  /* paneles azul suave */
     --texto:<?php echo $modo_oscuro ? '#ffffff' : '#1a3557'; ?>;
     --texto-suave:<?php echo $modo_oscuro ? '#BBBBBB' : '#334155'; ?>;
@@ -329,32 +329,32 @@ canvas#pizarra{
 
 <div class="barra-superior">
     <div class="titulo">
-        <span style="font-size:1.5em;">🎨</span>
+        <span style="font-size:1.5em;">ðŸŽ¨</span>
         <span>Pizarra Virtual Inclusiva</span>
     </div>
-    <a class="atras" href="<?php echo $dashboard_url; ?>">⬅ Volver</a>
+    <a class="atras" href="<?php echo $dashboard_url; ?>">â¬… Volver</a>
 </div>
 
 <div class="barra-sala" id="barraSala">
     <?php if ($sala_info): ?>
         <div class="info-sala">
-            <span>🖥️ Sala:</span>
+            <span>ðŸ–¥ï¸ Sala:</span>
             <span class="codigo"><?php echo htmlspecialchars($sala_codigo); ?></span>
-            <span>· <?php echo htmlspecialchars(ucfirst($sala_info['materia'] ?? 'Libre')); ?></span>
-            <span>· 👨‍🏫 <?php echo htmlspecialchars($sala_info['creador_nombre'] ?? 'Profesor'); ?></span>
-            <span class="aviso-sala">· 👤 Usted: <?php echo htmlspecialchars($usuario['nombre']); ?></span>
+            <span>Â· <?php echo htmlspecialchars(ucfirst($sala_info['materia'] ?? 'Libre')); ?></span>
+            <span>Â· ðŸ‘¨â€ðŸ« <?php echo htmlspecialchars($sala_info['creador_nombre'] ?? 'Profesor'); ?></span>
+            <span class="aviso-sala">Â· ðŸ‘¤ Usted: <?php echo htmlspecialchars($usuario['nombre']); ?></span>
         </div>
-        <div id="indicadorSincronizacion" class="aviso-sala">Conectado · sincronizando…</div>
+        <div id="indicadorSincronizacion" class="aviso-sala">Conectado Â· sincronizandoâ€¦</div>
         <button class="boton-sala salir" id="btnSalir">Salir de la sala</button>
 <?php else: ?>
-            <input type="text" id="inputCodigo" placeholder="Código de sala" maxlength="6" autocomplete="off">
-            <button class="boton-sala unir" id="btnUnirse">🔑 Unirse a sala</button>
-            <div class="aviso-sala">👤 Logueado como: <strong><?php echo htmlspecialchars($usuario['nombre']); ?></strong></div>
+            <input type="text" id="inputCodigo" placeholder="CÃ³digo de sala" maxlength="6" autocomplete="off">
+            <button class="boton-sala unir" id="btnUnirse">ðŸ”‘ Unirse a sala</button>
+            <div class="aviso-sala">ðŸ‘¤ Logueado como: <strong><?php echo htmlspecialchars($usuario['nombre']); ?></strong></div>
             <?php if ($es_profesor): ?>
-            <button class="boton-sala crear" id="btnCrearSala">🆕 Crear sala</button>
-            <div class="aviso-sala">Muestra el código a tu estudiante o compártelo para dibujar juntos en tiempo real.</div>
+            <button class="boton-sala crear" id="btnCrearSala">ðŸ†• Crear sala</button>
+            <div class="aviso-sala">Muestra el cÃ³digo a tu estudiante o compÃ¡rtelo para dibujar juntos en tiempo real.</div>
         <?php else: ?>
-            <div class="aviso-sala">Pide el código a tu profesor e ingrésalo para entrar a la pizarra compartida.</div>
+            <div class="aviso-sala">Pide el cÃ³digo a tu profesor e ingrÃ©salo para entrar a la pizarra compartida.</div>
         <?php endif; ?>
     <?php endif; ?>
 </div>
@@ -362,16 +362,16 @@ canvas#pizarra{
 <div class="toolbar">
     <div class="grupo-tools">
         <button class="tool activo" id="tool-lapiz" data-tool="lapiz">
-            <span class="pic">✏️</span><span class="label">Lápiz</span>
+            <span class="pic">âœï¸</span><span class="label">LÃ¡piz</span>
         </button>
         <button class="tool" id="tool-alta" data-tool="resaltador">
-            <span class="pic">🖍️</span><span class="label">Resaltar</span>
+            <span class="pic">ðŸ–ï¸</span><span class="label">Resaltar</span>
         </button>
         <button class="tool" id="tool-borrador" data-tool="borrador">
-            <span class="pic">🧽</span><span class="label">Borrar</span>
+            <span class="pic">ðŸ§½</span><span class="label">Borrar</span>
         </button>
         <button class="tool" id="tool-texto" data-tool="texto">
-            <span class="pic">🔤</span><span class="label">Texto</span>
+            <span class="pic">ðŸ”¤</span><span class="label">Texto</span>
         </button>
     </div>
 
@@ -379,16 +379,16 @@ canvas#pizarra{
 
     <div class="grupo-tools">
         <button class="tool" id="tool-rect" data-tool="rect">
-            <span class="pic">▭</span><span class="label">Cuadro</span>
+            <span class="pic">â–­</span><span class="label">Cuadro</span>
         </button>
         <button class="tool" id="tool-circulo" data-tool="circulo">
-            <span class="pic">◯</span><span class="label">Círculo</span>
+            <span class="pic">â—¯</span><span class="label">CÃ­rculo</span>
         </button>
         <button class="tool" id="tool-flecha" data-tool="flecha">
-            <span class="pic">➡️</span><span class="label">Flecha</span>
+            <span class="pic">âž¡ï¸</span><span class="label">Flecha</span>
         </button>
         <button class="tool" id="tool-linea" data-tool="linea">
-            <span class="pic">↗️</span><span class="label">Línea</span>
+            <span class="pic">â†—ï¸</span><span class="label">LÃ­nea</span>
         </button>
     </div>
 
@@ -399,40 +399,40 @@ canvas#pizarra{
     <div class="separador"></div>
 
     <div class="rango-linea">
-        <span>📏</span>
+        <span>ðŸ“</span>
         <input type="range" id="grosor" min="2" max="18" value="4">
     </div>
 
     <div class="separador"></div>
 
     <div class="accion-clas">
-        <button class="btn-accion revertir" id="btnDeshacer">↩️ Deshacer</button>
-        <button class="btn-accion limpiar" id="btnLimpiar">🧹 Limpiar</button>
-        <button class="btn-accion guardar" id="btnGuardar">💾 Guardar</button>
+        <button class="btn-accion revertir" id="btnDeshacer">â†©ï¸ Deshacer</button>
+        <button class="btn-accion limpiar" id="btnLimpiar">ðŸ§¹ Limpiar</button>
+        <button class="btn-accion guardar" id="btnGuardar">ðŸ’¾ Guardar</button>
     </div>
 </div>
 
 <div class="paneles">
     <div class="panel">
-        <h3>🖼️ Lienzos</h3>
+        <h3>ðŸ–¼ï¸ Lienzos</h3>
         <div class="opciones-platilla">
-            <button class="boton-plantilla activo" data-platilla="blanco"><span class="pic">⬜</span> Lienzo libre</button>
-            <button class="boton-plantilla" data-platilla="matematica"><span class="pic">➗</span> Fórmulas</button>
-            <button class="boton-plantilla" data-platilla="informatica"><span class="pic">💡</span> Diagrama de flujo</button>
-            <button class="boton-plantilla" data-platilla="aeronautica"><span class="pic">✈️</span> Aerodinámica</button>
-            <button class="boton-plantilla" data-platilla="quimica"><span class="pic">⚗️</span> Química</button>
-            <button class="boton-plantilla" data-platilla="fisica"><span class="pic">📐</span> Coordenadas</button>
+            <button class="boton-plantilla activo" data-platilla="blanco"><span class="pic">â¬œ</span> Lienzo libre</button>
+            <button class="boton-plantilla" data-platilla="matematica"><span class="pic">âž—</span> FÃ³rmulas</button>
+            <button class="boton-plantilla" data-platilla="informatica"><span class="pic">ðŸ’¡</span> Diagrama de flujo</button>
+            <button class="boton-plantilla" data-platilla="aeronautica"><span class="pic">âœˆï¸</span> AerodinÃ¡mica</button>
+            <button class="boton-plantilla" data-platilla="quimica"><span class="pic">âš—ï¸</span> QuÃ­mica</button>
+            <button class="boton-plantilla" data-platilla="fisica"><span class="pic">ðŸ“</span> Coordenadas</button>
         </div>
 
-        <h3 style="margin-top:16px;">🧩 Elementos</h3>
-        <p class="mini-aviso">Arrastra un elemento y suéltalo sobre el lienzo.</p>
+        <h3 style="margin-top:16px;">ðŸ§© Elementos</h3>
+        <p class="mini-aviso">Arrastra un elemento y suÃ©ltalo sobre el lienzo.</p>
         <div class="elementos-arrastre">
-            <div class="chip-arrastre" draggable="true" data-el="rect"><span class="pic">▭</span> Caja</div>
-            <div class="chip-arrastre" draggable="true" data-el="circulo"><span class="pic">◯</span> Círculo</div>
-            <div class="chip-arrastre" draggable="true" data-el="flecha"><span class="pic">➡️</span> Flecha</div>
-            <div class="chip-arrastre" draggable="true" data-el="diamante"><span class="pic">◆</span> Decisión</div>
-            <div class="chip-arrastre" draggable="true" data-el="formula"><span class="pic">ƒ</span> Fórmula</div>
-            <div class="chip-arrastre" draggable="true" data-el="mano"><span class="pic">✋</span> Flecha curva</div>
+            <div class="chip-arrastre" draggable="true" data-el="rect"><span class="pic">â–­</span> Caja</div>
+            <div class="chip-arrastre" draggable="true" data-el="circulo"><span class="pic">â—¯</span> CÃ­rculo</div>
+            <div class="chip-arrastre" draggable="true" data-el="flecha"><span class="pic">âž¡ï¸</span> Flecha</div>
+            <div class="chip-arrastre" draggable="true" data-el="diamante"><span class="pic">â—†</span> DecisiÃ³n</div>
+            <div class="chip-arrastre" draggable="true" data-el="formula"><span class="pic">Æ’</span> FÃ³rmula</div>
+            <div class="chip-arrastre" draggable="true" data-el="mano"><span class="pic">âœ‹</span> Flecha curva</div>
         </div>
     </div>
 
@@ -442,10 +442,10 @@ canvas#pizarra{
 </div>
 
 <div class="mensaje-bienvenida">
-    <strong>🌿 Consejos para tu aprendizaje:</strong>
-    Tómate tu tiempo. Usa los colores suaves, la flecha ➡️ para seguir pasos y los elementos 🧩 para ordenar tus ideas.
-    Cuando estés listo, guarda tu trabajo con 💾 y luego continua con la <strong>evaluación</strong>.<br>
-    <span style="opacity:.75;">👆 Puedes dibujar con el mouse o con el dedo (pantallas táctiles).</span>
+    <strong>ðŸŒ¿ Consejos para tu aprendizaje:</strong>
+    TÃ³mate tu tiempo. Usa los colores suaves, la flecha âž¡ï¸ para seguir pasos y los elementos ðŸ§© para ordenar tus ideas.
+    Cuando estÃ©s listo, guarda tu trabajo con ðŸ’¾ y luego continua con la <strong>evaluaciÃ³n</strong>.<br>
+    <span style="opacity:.75;">ðŸ‘† Puedes dibujar con el mouse o con el dedo (pantallas tÃ¡ctiles).</span>
 </div>
 
 <script>
@@ -473,7 +473,7 @@ function tamLienzo(){
 tamLienzo();
 window.addEventListener('resize', function(){ tamLienzo(); renderTodo(); });
 
-/* ------------------- Paleta cromática armónica (baja saturación) ---------- */
+/* ------------------- Paleta cromÃ¡tica armÃ³nica (baja saturaciÃ³n) ---------- */
 var COLORES = [
     { h:'#4A4A4A', n:'Gris' },
     { h:'#5B8DD9', n:'Azul' },
@@ -559,7 +559,7 @@ function sincronizarSala(){
                 var r = JSON.parse(xhr.responseText);
                 if (!r.ok) return;
                 var ind = document.getElementById('indicadorSincronizacion');
-                if (ind) ind.innerText = 'Conectado · al día';
+                if (ind) ind.innerText = 'Conectado Â· al dÃ­a';
                 var ruta = r.epoca !== SALA_EPOCA;   // hubo limpieza en la sala
                 if (ruta) {
                     trazos = [];
@@ -616,7 +616,7 @@ if (esSala()) {
     var btnUnirse = document.getElementById('btnUnirse');
     if (btnUnirse) btnUnirse.addEventListener('click', function(){
         var c = (document.getElementById('inputCodigo').value || '').trim().toUpperCase();
-        if (c.length < 4) { alert('Escribe el código de la sala'); return; }
+        if (c.length < 4) { alert('Escribe el cÃ³digo de la sala'); return; }
         var body = 'accion=unirse_sala&codigo=' + encodeURIComponent(c);
         var xhr = new XMLHttpRequest();
         xhr.open('POST', 'ajax_pizarra.php', true);
@@ -637,7 +637,7 @@ if (esSala()) {
 var btnSalir = document.getElementById('btnSalir');
 if (btnSalir) btnSalir.addEventListener('click', function(){ window.location.href = '<?php echo $dashboard_url; ?>'; });
 
-/* ------------------- Menú colores para texto ------------------- */
+/* ------------------- MenÃº colores para texto ------------------- */
 function generaBurbujaColor(c){
     var ex = document.getElementById('burbujaColores');
     if (ex) ex.remove();
@@ -670,8 +670,8 @@ function dibujaPlantilla(nombre){
 
     ctx.save();
     if (nombre === 'matematica' || nombre === 'fisica') {
-        // cuadrícula de coordenadas
-        ctx.strokeStyle = '#D8D2C2';
+        // cuadrÃ­cula de coordenadas
+        ctx.strokeStyle = '#C9D6E3';
         ctx.lineWidth = 1;
         ctx.beginPath();
         for (var x = 40; x < w; x += 40) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
@@ -690,9 +690,9 @@ function dibujaPlantilla(nombre){
         ctx.beginPath();
         ctx.moveTo(120, 150); ctx.quadraticCurveTo(300, 240, 500, 180);
         ctx.stroke();
-        dibujaTexto('f(x) = lím f(x)\n     x→a', 620, 120, '#5B8DD9', 22, false);
-        dibujaTexto('x² + y² = r²', 620, 230, '#6B9E5B', 20, false);
-        dibujaTexto('a·x² + b·x + c = 0', 620, 300, '#E8A87C', 20, false);
+        dibujaTexto('f(x) = lÃ­m f(x)\n     xâ†’a', 620, 120, '#5B8DD9', 22, false);
+        dibujaTexto('xÂ² + yÂ² = rÂ²', 620, 230, '#6B9E5B', 20, false);
+        dibujaTexto('aÂ·xÂ² + bÂ·x + c = 0', 620, 300, '#E8A87C', 20, false);
     }
     if (nombre === 'fisica') {
         dibujaTexto('Ejes de coordenadas', 30, 30, '#9D8DC1', 16, true);
@@ -715,7 +715,7 @@ function dibujaPlantilla(nombre){
         ctx.stroke();
         dibujaTexto('Inicio', 300, 95, '#fff', 18, true);
         dibujaTexto('Proceso', 300, 225, '#fff', 18, true);
-        dibujaTexto('¿Condición?', 300, 330, '#333', 16, true);
+        dibujaTexto('Â¿CondiciÃ³n?', 300, 330, '#333', 16, true);
     }
     if (nombre === 'aeronautica') {
         // perfil de ala
@@ -729,7 +729,7 @@ function dibujaPlantilla(nombre){
         ctx.fillStyle = '#D3E3F0';
         ctx.fill();
         ctx.stroke();
-        // líneas de flujo
+        // lÃ­neas de flujo
         ctx.strokeStyle = '#9D8DC1';
         ctx.lineWidth = 2;
         var flujo = [[90,270],[200,240],[330,230],[460,240]];
@@ -739,8 +739,8 @@ function dibujaPlantilla(nombre){
             ctx.quadraticCurveTo((flujo[i][0]+flujo[i+1][0])/2, flujo[i][1]-28, flujo[i+1][0], flujo[i+1][1]);
             ctx.stroke();
         }
-        dibujaTexto('Flujo de aire →', 90, 250, '#9D8DC1', 16, true);
-        dibujaTexto('Sustentación ↑', 200, 120, '#6B9E5B', 20, true);
+        dibujaTexto('Flujo de aire â†’', 90, 250, '#9D8DC1', 16, true);
+        dibujaTexto('SustentaciÃ³n â†‘', 200, 120, '#6B9E5B', 20, true);
         dibujaTexto('Principio de Bernoulli', 120, 470, '#5B8DD9', 16, true);
     }
     ctx.restore();
@@ -843,13 +843,13 @@ function dibujaPlantillaBase(){
     var w = canvas.width / DPR;
     var h = canvas.height / DPR;
     if (nombre === 'blanco') {
-        ctx.fillStyle = '#FBF7EF';
+        ctx.fillStyle = '#FFFFFF';
         ctx.fillRect(0, 0, w, h);
         return;
     }
     ctx.save();
     if (nombre === 'matematica' || nombre === 'fisica') {
-        ctx.strokeStyle = '#D8D2C2';
+        ctx.strokeStyle = '#C9D6E3';
         ctx.lineWidth = 1;
         ctx.beginPath();
         for (var x = 40; x < w; x += 40) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
@@ -868,9 +868,9 @@ function dibujaPlantillaBase(){
         ctx.beginPath();
         ctx.moveTo(120, 150); ctx.quadraticCurveTo(300, 240, 500, 180);
         ctx.stroke();
-        dibujaTexto('f(x)=lím f(x)', 620, 120, '#5B8DD9', 22, false);
-        dibujaTexto('x² + y² = r²', 620, 230, '#6B9E5B', 20, false);
-        dibujaTexto('a·x²+b·x+c=0', 620, 300, '#E8A87C', 20, false);
+        dibujaTexto('f(x)=lÃ­m f(x)', 620, 120, '#5B8DD9', 22, false);
+        dibujaTexto('xÂ² + yÂ² = rÂ²', 620, 230, '#6B9E5B', 20, false);
+        dibujaTexto('aÂ·xÂ²+bÂ·x+c=0', 620, 300, '#E8A87C', 20, false);
     }
     if (nombre === 'informatica') {
         ctx.strokeStyle = '#5B8DD9';
@@ -911,12 +911,12 @@ function dibujaPlantillaBase(){
             ctx.stroke();
         }
         dibujaTexto('Flujo de aire', 90, 250, '#9D8DC1', 16, true);
-        dibujaTexto('Sustentación ↑', 200, 120, '#6B9E5B', 20, true);
+        dibujaTexto('SustentaciÃ³n â†‘', 200, 120, '#6B9E5B', 20, true);
     }
     if (nombre === 'quimica') {
-        ctx.fillStyle = '#FBF7EF';
+        ctx.fillStyle = '#FFFFFF';
         ctx.fillRect(0, 0, w, h);
-        // molécula de agua H2O
+        // molÃ©cula de agua H2O
         ctx.strokeStyle = '#5B8DD9';
         ctx.lineWidth = 3;
         ctx.beginPath();
@@ -946,14 +946,14 @@ function dibujaPlantillaBase(){
 
 function renderTodo(){ dibujaTrazos(); }
 
-/* ------------------- Eventos del ratón / táctil ------------------- */
+/* ------------------- Eventos del ratÃ³n / tÃ¡ctil ------------------- */
 function obtenerPunto(e){
     var r = canvas.getBoundingClientRect();
     var te = (e.touches && e.touches[0]) ? e.touches[0] : e;
     return { x: (te.clientX - r.left) * (canvas.width / DPR) / (r.width / 1), y: (te.clientY - r.top) * (canvas.height / DPR) / (r.height / 1) };
 }
 
-// Escala: el CSS puede encoger, así que corregimos por el factor real
+// Escala: el CSS puede encoger, asÃ­ que corregimos por el factor real
 function puntoLienzo(e){
     var r = canvas.getBoundingClientRect();
     var te = (e.touches && e.touches[0]) ? e.touches[0] : e;
@@ -969,7 +969,7 @@ function iniciar(e){
     e.preventDefault();
     var p = puntoLienzo(e);
     if (toolActivo === 'texto') {
-        var texto = prompt('Escribe tu texto (fórmula o nota):', 'x² + y²');
+        var texto = prompt('Escribe tu texto (fÃ³rmula o nota):', 'xÂ² + yÂ²');
         if (texto !== null && texto.trim() !== '') {
             trazos.push({
                 tipo: 'texto', x: p.x, y: p.y, color: color,
@@ -1025,7 +1025,7 @@ canvas.addEventListener('touchstart', iniciar, { passive: false });
 canvas.addEventListener('touchmove', mover, { passive: false });
 window.addEventListener('touchend', finalizar);
 
-/* ------------------- Botón deshacer (solo modo individual) ------------------- */
+/* ------------------- BotÃ³n deshacer (solo modo individual) ------------------- */
 var btnDeshacer = document.getElementById('btnDeshacer');
 if (esSala()) { if (btnDeshacer) btnDeshacer.disabled = true; }
 else if (btnDeshacer) {
@@ -1041,9 +1041,9 @@ else if (btnDeshacer) {
     });
 }
 
-/* ------------------- Botón limpiar ------------------- */
+/* ------------------- BotÃ³n limpiar ------------------- */
 document.getElementById('btnLimpiar').addEventListener('click', function(){
-    if (!confirm('¿Limpiar todo el lienzo' + (esSala() ? ' para todos' : '') + '?')) return;
+    if (!confirm('Â¿Limpiar todo el lienzo' + (esSala() ? ' para todos' : '') + '?')) return;
     trazos = [];
     historial = [];
     renderTodo();
@@ -1055,7 +1055,7 @@ document.getElementById('btnLimpiar').addEventListener('click', function(){
     }
 });
 
-/* ------------------- Botón guardar / descargar ------------------- */
+/* ------------------- BotÃ³n guardar / descargar ------------------- */
 document.getElementById('btnGuardar').addEventListener('click', function(){
     var temp = document.createElement('canvas');
     temp.width = canvas.width;
@@ -1112,7 +1112,7 @@ document.getElementById('btnGuardar').addEventListener('click', function(){
     enlace.click();
 });
 
-/* ------------------- Selección de plantilla ------------------- */
+/* ------------------- SelecciÃ³n de plantilla ------------------- */
 document.querySelectorAll('.boton-plantilla').forEach(function(b){
     b.addEventListener('click', function(){
         plantillaActiva = b.getAttribute('data-platilla');
@@ -1148,7 +1148,7 @@ canvas.addEventListener('drop', function(e){
     } else if (tipo === 'diamante') {
         trazos.push({ tipo:'diamante', x:p.x, y:p.y, r:50, color:color, grosor:grosor });
     } else if (tipo === 'formula') {
-        trazos.push({ tipo:'texto', x:p.x, y:p.y, color:'#5B8DD9', tam: FUENTE_G ? 24 : 20, lineas:['f(x) = lím f(x)','       x→a'] });
+        trazos.push({ tipo:'texto', x:p.x, y:p.y, color:'#5B8DD9', tam: FUENTE_G ? 24 : 20, lineas:['f(x) = lÃ­m f(x)','       xâ†’a'] });
     } else if (tipo === 'mano') {
         trazos.push({ tipo:'mano', x:p.x, y:p.y, color:color, grosor:grosor });
     }
