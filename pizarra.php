@@ -55,13 +55,14 @@ if ($sala_codigo !== '') {
 <title><?php echo $sala_info ? 'Sala ' . $sala_info['codigo'] . ' - ' : ''; ?>Pizarra Virtual Inclusiva - Academia JB</title>
 <style>
 :root{
-    --fondo-lienzo:#FBF7EF;            /* crema cálido: libre de sobrecarga */
-    --fondo-app:<?php echo $modo_oscuro ? '#151515' : '#EFEBE0'; ?>;
-    --fondo-toolbar:<?php echo $modo_oscuro ? '#222222' : '#E4DFD2'; ?>;
-    --texto:<?php echo $modo_oscuro ? '#EEEEEE' : '#333'; ?>;
-    --texto-suave:<?php echo $modo_oscuro ? '#BBBBBB' : '#666'; ?>;
-    --acento:#3D6B99;
-    --acento-2:#6B9E5B;
+    --fondo-lienzo:<?php echo $modo_oscuro ? '#1f1f1f' : '#ffffff'; ?>;   /* superficie de dibujo blanca */
+    --fondo-app:<?php echo $modo_oscuro ? '#121212' : '#e8f0fe'; ?>;      /* fondo azul claro como el resto de pestañas */
+    --fondo-toolbar:<?php echo $modo_oscuro ? '#1f1f1f' : '#e3f2fd'; ?>;  /* paneles azul suave */
+    --texto:<?php echo $modo_oscuro ? '#ffffff' : '#1a3557'; ?>;
+    --texto-suave:<?php echo $modo_oscuro ? '#BBBBBB' : '#334155'; ?>;
+    --acento:#2196F3;               /* azul de la app */
+    --acento-2:#4CAF50;             /* verde de la app */
+    --borde:<?php echo $modo_oscuro ? '#333333' : '#c3d4e5'; ?>;
 }
 *{box-sizing:border-box;}
 body{
@@ -78,7 +79,8 @@ body{
     justify-content:space-between;
     gap:12px;
     flex-wrap:wrap;
-    background:var(--fondo-toolbar);
+    background:#1a426e;
+    color:#fff;
     padding:10px 18px;
     box-shadow:0 2px 6px rgba(0,0,0,.08);
 }
@@ -91,8 +93,8 @@ body{
 }
 .barra-superior a.atras{
     text-decoration:none;
-    color:var(--texto);
-    background:var(--fondo-lienzo);
+    color:#1a426e;
+    background:#ffffff;
     padding:8px 14px;
     border-radius:10px;
     font-weight:bold;
@@ -155,7 +157,7 @@ body{
     font-size:.95em;
 }
 .boton-sala.crear{background:var(--acento-2); color:#fff;}
-.boton-sala.unir{background:#8A7F9F; color:#fff;}
+.boton-sala.unir{background:var(--acento); color:#fff;}
 .boton-sala.salir{background:#C96F6F; color:#fff;}
 .chip-arrastre.disabled, .boton-plantilla.disabled{opacity:.45; pointer-events:none;}
 
@@ -193,19 +195,19 @@ body{
     display:inline-flex;
     align-items:center;
     gap:6px;
-    border:2px solid transparent;
+    border:2px solid var(--borde);
     transition:transform .12s ease, background .15s ease;
 }
 .tool:hover{transform:translateY(-2px);}
 .tool.activo{
     background:var(--acento);
     color:#fff;
-    border-color:<?php echo $modo_oscuro ? '#7FB0E8' : '#2C4F75'; ?>;
+    border-color:<?php echo $modo_oscuro ? '#7FB0E8' : '#1565C0'; ?>;
 }
 .tool .pic{font-size:1.35em; line-height:1;}
 .tool .label{font-weight:bold;}
 
-.separador{width:1px; height:34px; background:<?php echo $modo_oscuro ? '#444' : '#bdb6a5'; ?>; margin:0 4px;}
+.separador{width:1px; height:34px; background:<?php echo $modo_oscuro ? '#444' : '#c3d4e5'; ?>; margin:0 4px;}
 
 .color-picker{display:flex; gap:6px; align-items:center;}
 .swatch{
@@ -213,7 +215,7 @@ body{
     border:3px solid transparent; cursor:pointer;
     box-shadow:0 1px 3px rgba(0,0,0,.2);
 }
-.swatch.activo{border-color:<?php echo $modo_oscuro ? '#fff' : '#3D6B99'; ?>; transform:scale(1.12);}
+.swatch.activo{border-color:<?php echo $modo_oscuro ? '#fff' : 'var(--acento)'; ?>; transform:scale(1.12);}
 
 .rango-linea{display:flex; align-items:center; gap:8px;}
 .rango-linea input{accent-color:var(--acento); cursor:pointer;}
@@ -287,7 +289,7 @@ canvas#pizarra{
     gap:8px;
     user-select:none;
 }
-.chip-arrastre.drag{border-color:var(--acento); background:<?php echo $modo_oscuro ? '#2a2a2a' : '#EDE9DE'; ?>;}
+.chip-arrastre.drag{border-color:var(--acento); background:<?php echo $modo_oscuro ? '#2a2a2a' : '#E3F2FD'; ?>;}
 .chip-arrastre .pic{font-size:1.5em;}
 
 .accion-clas{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;}
@@ -304,7 +306,7 @@ canvas#pizarra{
 }
 .btn-accion.limpiar{background:#C96F6F; color:#fff;}
 .btn-accion.guardar{background:#5B8DD9; color:#fff;}
-.btn-accion.revertir{background:<?php echo $modo_oscuro ? '#3a3a3a' : '#d6d0bf'; ?>; color:var(--texto);}
+.btn-accion.revertir{background:<?php echo $modo_oscuro ? '#3a3a3a' : '#cfd9e5'; ?>; color:var(--texto);}
 
 .mensaje-bienvenida{
     max-width:700px;
