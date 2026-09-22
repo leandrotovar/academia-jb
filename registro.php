@@ -143,11 +143,6 @@
             <div id="reqEsp"><span style="color:#94a3b8;">⬜</span> Al menos un carácter especial (!@#$…)</div>
         </div>
 
-        <label>Rol:</label>
-        <select name="rol">
-            <option value="estudiante">Estudiante</option>
-        </select>
-
         <label style="margin-top:18px;">Tipo de Usuario:</label>
         <div style="display:flex; gap:15px; margin-top:5px;">
             <label style="font-weight:normal; font-size:14px; display:flex; align-items:center; gap:5px; cursor:pointer;">

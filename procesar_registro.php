@@ -6,7 +6,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $cedula = trim($_POST['cedula']);
     $email = $_POST['email'];
     $password_raw = $_POST['password'];
-    $rol = $_POST['rol'];
+    $rol = 'estudiante';
     $tipo_tea = isset($_POST['tipo_tea']) ? intval($_POST['tipo_tea']) : 0;
 
     // Validar dominio Gmail
