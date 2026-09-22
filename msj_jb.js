@@ -7,6 +7,14 @@
     if (typeof window.Swal === 'undefined') return;
     if (window.msjJb) return;
 
+    var requiereCuerpo = function (fn) {
+        if (document.body) {
+            fn();
+        } else {
+            document.addEventListener('DOMContentLoaded', fn);
+        }
+    };
+
     var inyectaEstilo = function () {
         if (document.getElementById('jb-estilos-msj')) return;
         var css =
@@ -52,12 +60,15 @@
     };
 
     inyectaEstilo();
-    document.body.classList.toggle('jb-oscuro', esOscuro());
+    requiereCuerpo(function () {
+        document.body.classList.toggle('jb-oscuro', esOscuro());
+    });
 
     /* Aviso discreto en la parte INFERIOR de la pantalla. Se cierra solo.
        Uso: msjJb('Texto', 'exito|error|aviso|info', 'redirigirA.php' o function) */
     window.msjJb = function (texto, tipo, redirigirA) {
         tipo = tipo || 'info';
+        if (typeof window.Swal === 'undefined') return;
         Swal.fire({
             toast: true,
             position: 'bottom-end',

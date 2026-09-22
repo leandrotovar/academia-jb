@@ -74,6 +74,8 @@
             }
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script src="msj_jb.js?v=4"></script>
 </head>
 <body>
 
@@ -90,13 +92,14 @@
     <!-- INYECCIÓN DEL BLOQUE DE ERROR DINÁMICO -->
     <?php
     if (isset($_GET['error'])) {
-        echo '<div class="alerta-interna">';
         if ($_GET['error'] == 'clave_incorrecta') {
-            echo '⚠️ Contraseña incorrecta. Inténtalo de nuevo.';
+            $msg_jb = '⚠️ Contraseña incorrecta. Inténtalo de nuevo.';
         } elseif ($_GET['error'] == 'no_usuario') {
-            echo '❌ El correo electrónico no está registrado.';
+            $msg_jb = '❌ El correo electrónico no está registrado.';
         }
-        echo '</div>';
+        if (isset($msg_jb)) {
+            echo '<script>document.addEventListener("DOMContentLoaded", function(){ msjJb(' . json_encode($msg_jb, JSON_UNESCAPED_UNICODE) . ', "error"); });</script>';
+        }
     }
     ?>
 
