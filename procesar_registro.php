@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 include 'conexion.php';
 
 function aviso_jb($texto, $tipo = 'info', $accion = 'atras') {
@@ -14,7 +14,7 @@ function aviso_jb($texto, $tipo = 'info', $accion = 'atras') {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Academia JB</title>
 <script src="sweetalert2.all.min.js?v=7"></script>
-<script src="msj_jb.js?v=7"></script>
+<script src="msj_jb.js?v=8"></script>
 </head>
 <body>
 <script>msjJb(' . json_encode($texto, JSON_UNESCAPED_UNICODE) . ', "' . $tipo . '", ' . $js_accion . ');</script>

@@ -83,20 +83,20 @@
         document.addEventListener('DOMContentLoaded', aplicaOscuro);
     }
 
-    /* Aviso discreto en la parte INFERIOR. Se cierra solo.
-       Uso: msjJb('Texto', 'exito|error|aviso|info', 'redirigirA.php' o function) */
+    /* Aviso CENTRADO tranquilo, MISMO estilo que la confirmación de cursos.php.
+       Se cierra solo a los pocos segundos. Uso: msjJb('Texto', 'exito|error|aviso|info', 'redirigirA.php' o function) */
     window.msjJb = function (texto, tipo, redirigirA) {
         tipo = tipo || 'info';
         Swal.fire({
-            toast: true,
-            position: 'bottom-end',
             icon: iconoDe(tipo),
             title: texto,
             showConfirmButton: false,
-            timer: 3400,
+            timer: 3800,
             timerProgressBar: true,
-            customClass: { popup: 'jb-aviso' },
-            backdrop: false
+            confirmButtonColor: colorDe(tipo),
+            customClass: { popup: 'jb-confirmar jb-centrado' },
+            backdrop: 'rgba(26, 66, 110, 0.3)',
+            width: 430
         }).then(function () {
             if (typeof redirigirA === 'function') {
                 redirigirA();
