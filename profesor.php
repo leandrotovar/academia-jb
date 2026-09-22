@@ -10,7 +10,7 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['rol'] === 'estudiante') {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Academia JB</title>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="sweetalert2.all.min.js?v=7"></script>
 <script src="msj_jb.js?v=7"></script>
 </head>
 <body>
@@ -339,7 +339,7 @@ if ($res_sp) {
         .btn-pizarra.nueva { background: #8A7F9F; }
         .btn-pizarra:hover { filter: brightness(0.94); }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script src="sweetalert2.all.min.js?v=7"></script>
     <script src="msj_jb.js?v=7"></script>
 </head>
 <body>

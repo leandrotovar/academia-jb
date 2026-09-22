@@ -13,7 +13,7 @@ function aviso_jb($texto, $tipo = 'info', $accion = 'atras') {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Academia JB</title>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="sweetalert2.all.min.js?v=7"></script>
 <script src="msj_jb.js?v=7"></script>
 </head>
 <body>

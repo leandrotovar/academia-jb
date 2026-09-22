@@ -326,7 +326,7 @@ $es_profesor = ($usuario['rol'] === 'docente' || $usuario['rol'] === 'administra
             }
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script src="sweetalert2.all.min.js?v=7"></script>
     <script src="msj_jb.js?v=7"></script>
 </head>
 <body>
