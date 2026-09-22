@@ -326,6 +326,8 @@ $es_profesor = ($usuario['rol'] === 'docente' || $usuario['rol'] === 'administra
             }
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script src="msj_jb.js"></script>
 </head>
 <body>
 
@@ -528,8 +530,7 @@ if (!cursoInscrito) {
     }
 } else if (cursoInscrito !== materiaClave) {
     const nombreActivo = localStorage.getItem("curso_nombre");
-    alert("⚠️ Ya tienes un curso activo: '" + nombreActivo + "'. Termínalo primero.");
-    window.location.href = "registrar_cursos.php";
+    msjJb("Ya tienes un curso activo: '" + nombreActivo + "'. Termínalo primero.", 'aviso', 'registrar_cursos.php');
 }
 
 let totalPreguntas = 0;

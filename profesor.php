@@ -4,7 +4,19 @@ include 'conexion.php';
 
 // 1. Validar que el usuario haya iniciado sesión y que sea un docente o administrador
 if (!isset($_SESSION['usuario_id']) || $_SESSION['rol'] === 'estudiante') {
-    echo "<script>alert('Acceso denegado. Esta pantalla es exclusiva para profesores.'); window.location.href='login.php';</script>";
+    echo '<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Academia JB</title>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="msj_jb.js"></script>
+</head>
+<body>
+<script>msjJb("Acceso denegado. Esta pantalla es exclusiva para profesores.", "error", function(){ window.location.href="login.php"; });</script>
+</body>
+</html>';
     exit();
 }
 
@@ -327,6 +339,8 @@ if ($res_sp) {
         .btn-pizarra.nueva { background: #8A7F9F; }
         .btn-pizarra:hover { filter: brightness(0.94); }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script src="msj_jb.js"></script>
 </head>
 <body>
     
@@ -554,10 +568,10 @@ function crearSalaProfesor(materia) {
                 if (r.ok) {
                     window.location.href = 'pizarra.php?sala=' + encodeURIComponent(r.codigo) + '&materia=' + encodeURIComponent(r.materia);
                 } else {
-                    alert(r.error || 'No se pudo crear la sala');
+                    msjJb(r.error || 'No se pudo crear la sala', 'error');
                 }
             } catch (e) {
-                alert('Error al crear la sala');
+                msjJb('Error al crear la sala', 'error');
             }
         }
     };

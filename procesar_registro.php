@@ -1,6 +1,27 @@
 <?php
 include 'conexion.php';
 
+function aviso_jb($texto, $tipo = 'info', $accion = 'atras') {
+    if ($accion === 'login') {
+        $js_accion = "function(){ window.location.href='login.php'; }";
+    } else {
+        $js_accion = "function(){ window.history.back(); }";
+    }
+    echo '<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Academia JB</title>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="msj_jb.js"></script>
+</head>
+<body>
+<script>msjJb(' . json_encode($texto, JSON_UNESCAPED_UNICODE) . ', "' . $tipo . '", ' . $js_accion . ');</script>
+</body>
+</html>';
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nombre = $_POST['nombre'];
     $cedula = trim($_POST['cedula']);
@@ -10,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Validar dominio Gmail
     if (!preg_match('/^[a-zA-Z0-9._%+\-]+@gmail\.com$/', $email)) {
-        echo "<script>alert('Solo se permiten correos electrónicos de Gmail (@gmail.com).'); window.history.back();</script>";
+        aviso_jb('Solo se permiten correos electrónicos de Gmail (@gmail.com).');
         exit();
     }
 
@@ -20,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         !preg_match('/[a-z]/', $password_raw) ||
         !preg_match('/[0-9]/', $password_raw) ||
         !preg_match('/[^A-Za-z0-9\s]/', $password_raw)) {
-        echo "<script>alert('La contraseña debe tener al menos 8 caracteres e incluir: mayúscula, minúscula, número y carácter especial.'); window.history.back();</script>";
+        aviso_jb('La contraseña debe tener al menos 8 caracteres e incluir: mayúscula, minúscula, número y carácter especial.');
         exit();
     }
 
@@ -38,13 +59,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $resultado = $conn->query($check_email);
 
     if ($resultado->num_rows > 0) {
-        echo "<script>alert('El correo electrónico ya se encuentra registrado. Intenta con otro o inicia sesión.'); window.history.back();</script>";
+        aviso_jb('El correo electrónico ya se encuentra registrado. Intenta con otro o inicia sesión.');
     } else {
         $sql = "INSERT INTO usuarios (nombre, cedula, email, password, tipo_tea, modo_oscuro, fuente_grande, pictogramas_activos, temporizador_visual) 
                 VALUES ('$nombre', '$cedula', '$email', '$password', $tipo_tea, $modo_oscuro, $fuente_grande, $pictogramas, $temporizador)";
 
         if ($conn->query($sql) === TRUE) {
-            echo "<script>alert('Registro exitoso. Ya puedes iniciar sesión.'); window.location.href='login.php';</script>";
+            aviso_jb('Registro exitoso. Ya puedes iniciar sesión.', 'exito', 'login');
         } else {
             echo "Error: " . $sql . "<br>" . $conn->error;
         }

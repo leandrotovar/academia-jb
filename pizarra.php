@@ -324,6 +324,8 @@ canvas#pizarra{
     *,*::before,*::after{transition-duration:.01ms !important; animation-duration:.01ms !important;}
 }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="msj_jb.js"></script>
 </head>
 <body>
 
@@ -606,7 +608,7 @@ if (esSala()) {
                 try {
                     var r = JSON.parse(xhr.responseText);
                     if (r.ok) window.location.href = 'pizarra.php?sala=' + r.codigo + '&materia=' + r.materia;
-                    else alert(r.error || 'No se pudo crear la sala');
+                    else msjJb(r.error || 'No se pudo crear la sala', 'error');
                 } catch(e){}
             }
         };
@@ -616,7 +618,7 @@ if (esSala()) {
     var btnUnirse = document.getElementById('btnUnirse');
     if (btnUnirse) btnUnirse.addEventListener('click', function(){
         var c = (document.getElementById('inputCodigo').value || '').trim().toUpperCase();
-        if (c.length < 4) { alert('Escribe el código de la sala'); return; }
+        if (c.length < 4) { msjJb('Escribe el código de la sala', 'aviso'); return; }
         var body = 'accion=unirse_sala&codigo=' + encodeURIComponent(c);
         var xhr = new XMLHttpRequest();
         xhr.open('POST', 'ajax_pizarra.php', true);
@@ -626,7 +628,7 @@ if (esSala()) {
                 try {
                     var r = JSON.parse(xhr.responseText);
                     if (r.ok) window.location.href = 'pizarra.php?sala=' + r.codigo + '&materia=' + r.materia;
-                    else alert(r.error || 'No se pudo unir');
+                    else msjJb(r.error || 'No se pudo unir', 'error');
                 } catch(e){}
             }
         };
