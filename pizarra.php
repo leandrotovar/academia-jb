@@ -224,7 +224,7 @@ body{
     padding:14px;
     display:flex;
     justify-content:center;
-    background:<?php echo $modo_oscuro ? '#0E0E0E' : '#ECE7DA'; ?>;
+    background:<?php echo $modo_oscuro ? '#0E0E0E' : '#E3F2FD'; ?>;
 }
 canvas#pizarra{
     background:var(--fondo-lienzo);
