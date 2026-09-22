@@ -11,7 +11,7 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['rol'] === 'estudiante') {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Academia JB</title>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-<script src="msj_jb.js?v=4"></script>
+<script src="msj_jb.js?v=5"></script>
 </head>
 <body>
 <script>msjJb("Acceso denegado. Esta pantalla es exclusiva para profesores.", "error", function(){ window.location.href="login.php"; });</script>
@@ -340,7 +340,7 @@ if ($res_sp) {
         .btn-pizarra:hover { filter: brightness(0.94); }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-    <script src="msj_jb.js?v=4"></script>
+    <script src="msj_jb.js?v=5"></script>
 </head>
 <body>
     
@@ -557,25 +557,26 @@ function toggleCurso(materia) {
 }
 
 function crearSalaProfesor(materia) {
-    if (!confirm('¿Crear una sala de pizarra para este curso? Se desactivará la sala anterior si existía.')) return;
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'ajax_pizarra.php', true);
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            try {
-                const r = JSON.parse(xhr.responseText);
-                if (r.ok) {
-                    window.location.href = 'pizarra.php?sala=' + encodeURIComponent(r.codigo) + '&materia=' + encodeURIComponent(r.materia);
-                } else {
-                    msjJb(r.error || 'No se pudo crear la sala', 'error');
+    msjJbConfirm('¿Crear una sala de pizarra para este curso? Se desactivará la sala anterior si existía.', function(){
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'ajax_pizarra.php', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    const r = JSON.parse(xhr.responseText);
+                    if (r.ok) {
+                        window.location.href = 'pizarra.php?sala=' + encodeURIComponent(r.codigo) + '&materia=' + encodeURIComponent(r.materia);
+                    } else {
+                        msjJb(r.error || 'No se pudo crear la sala', 'error');
+                    }
+                } catch (e) {
+                    msjJb('Error al crear la sala', 'error');
                 }
-            } catch (e) {
-                msjJb('Error al crear la sala', 'error');
             }
-        }
-    };
-    xhr.send('accion=crear_sala&materia=' + encodeURIComponent(materia));
+        };
+        xhr.send('accion=crear_sala&materia=' + encodeURIComponent(materia));
+    }, 'aviso');
 }
 
 function abrirMonitoreo(usuarioId, inscripcionId, nombre, email, notas) {

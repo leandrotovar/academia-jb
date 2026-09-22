@@ -445,6 +445,18 @@ $res_estudiantes = $conn->query("
             }
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script src="msj_jb.js?v=5"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('form.form-eliminar').forEach(function (f) {
+                f.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    msjJbConfirm(f.getAttribute('data-msg') || '¿Seguro que deseas eliminar?', function () { f.submit(); }, 'aviso');
+                });
+            });
+        });
+    </script>
 </head>
 <body>
 
@@ -682,7 +694,7 @@ $res_estudiantes = $conn->query("
                                     </td>
                                     <td style="text-align:center;">
                                         <button class="btn-accion btn-sm" onclick="abrirMateriales(<?php echo $c['id']; ?>, '<?php echo htmlspecialchars($c['clave'], ENT_QUOTES); ?>', '<?php echo htmlspecialchars($c['nombre'], ENT_QUOTES); ?>', '<?php echo htmlspecialchars($c['video_url'] ?? '', ENT_QUOTES); ?>', '<?php echo htmlspecialchars($c['pdf_path'] ?? '', ENT_QUOTES); ?>', '<?php echo htmlspecialchars($c['texto_leccion'] ?? '', ENT_QUOTES); ?>')" style="margin-right:4px;">📦 Materiales</button>
-                                        <form action="administrador.php" method="POST" onsubmit="return confirm('¿Eliminar el curso «<?php echo htmlspecialchars($c['nombre']); ?>»? Se eliminarán las inscripciones relacionadas.')" style="display:inline;">
+                                        <form action="administrador.php" method="POST" class="form-eliminar" data-msg="<?php echo htmlspecialchars('¿Eliminar el curso «' . $c['nombre'] . '»? Se eliminarán las inscripciones relacionadas.', ENT_QUOTES); ?>" style="display:inline;">
                                             <input type="hidden" name="eliminar_curso" value="1">
                                             <input type="hidden" name="curso_id" value="<?php echo $c['id']; ?>">
                                             <button type="submit" class="btn-accion btn-peligro btn-sm">🗑️</button>
@@ -757,7 +769,7 @@ $res_estudiantes = $conn->query("
                                         <td style="font-size:12px;"><?php echo $ev['fecha_inicio']; if ($ev['fecha_fin']) echo ' → '.$ev['fecha_fin']; ?></td>
                                         <td><span class="badge" style="background:#e2e8f0; color:#1a426e;"><?php echo $ev['tipo']; ?></span></td>
                                         <td style="text-align:center;">
-                                            <form action="administrador.php" method="POST" onsubmit="return confirm('¿Eliminar evento?');">
+                                            <form action="administrador.php" method="POST" class="form-eliminar" data-msg="¿Eliminar evento?">
                                                 <input type="hidden" name="eliminar_evento" value="1">
                                                 <input type="hidden" name="evento_id" value="<?php echo $ev['id']; ?>">
                                                 <button type="submit" class="btn-accion btn-peligro btn-sm">🗑️</button>
@@ -811,7 +823,7 @@ $res_estudiantes = $conn->query("
                                         <td><?php echo htmlspecialchars($tr['termino']); ?></td>
                                         <td><?php echo htmlspecialchars($tr['materia'] ?? '—'); ?></td>
                                         <td style="text-align:center;">
-                                            <form action="administrador.php" method="POST" onsubmit="return confirm('¿Eliminar término?');">
+                                            <form action="administrador.php" method="POST" class="form-eliminar" data-msg="¿Eliminar término?">
                                                 <input type="hidden" name="eliminar_termino" value="1">
                                                 <input type="hidden" name="termino_id" value="<?php echo $tr['id']; ?>">
                                                 <button type="submit" class="btn-accion btn-peligro btn-sm">🗑️</button>

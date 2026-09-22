@@ -325,7 +325,7 @@ canvas#pizarra{
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-<script src="msj_jb.js?v=4"></script>
+<script src="msj_jb.js?v=5"></script>
 </head>
 <body>
 
@@ -971,16 +971,17 @@ function iniciar(e){
     e.preventDefault();
     var p = puntoLienzo(e);
     if (toolActivo === 'texto') {
-        var texto = prompt('Escribe tu texto (fórmula o nota):', 'x² + y²');
-        if (texto !== null && texto.trim() !== '') {
-            trazos.push({
-                tipo: 'texto', x: p.x, y: p.y, color: color,
-                tam: FUENTE_G ? 26 : 20,
-                lineas: texto.split('\n')
-            });
-            renderTodo();
-            guardaUltimoTrazo();
-        }
+        msjJbPrompt('Escribe tu texto (fórmula o nota):', 'x² + y²', function (texto) {
+            if (texto.trim() !== '') {
+                trazos.push({
+                    tipo: 'texto', x: p.x, y: p.y, color: color,
+                    tam: FUENTE_G ? 26 : 20,
+                    lineas: texto.split('\n')
+                });
+                renderTodo();
+                guardaUltimoTrazo();
+            }
+        });
         return;
     }
     dibujando = true;
@@ -1045,16 +1046,17 @@ else if (btnDeshacer) {
 
 /* ------------------- Botón limpiar ------------------- */
 document.getElementById('btnLimpiar').addEventListener('click', function(){
-    if (!confirm('¿Limpiar todo el lienzo' + (esSala() ? ' para todos' : '') + '?')) return;
-    trazos = [];
-    historial = [];
-    renderTodo();
-    if (esSala()) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', 'ajax_pizarra.php', true);
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.send('accion=limpiar&sala_id=' + SALA_ID);
-    }
+    msjJbConfirm('¿Limpiar todo el lienzo' + (esSala() ? ' para todos' : '') + '?', function(){
+        trazos = [];
+        historial = [];
+        renderTodo();
+        if (esSala()) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'ajax_pizarra.php', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.send('accion=limpiar&sala_id=' + SALA_ID);
+        }
+    }, 'aviso');
 });
 
 /* ------------------- Botón guardar / descargar ------------------- */

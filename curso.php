@@ -327,7 +327,7 @@ $es_profesor = ($usuario['rol'] === 'docente' || $usuario['rol'] === 'administra
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-    <script src="msj_jb.js?v=4"></script>
+    <script src="msj_jb.js?v=5"></script>
 </head>
 <body>
 
@@ -518,16 +518,16 @@ const cursoInscrito = localStorage.getItem("curso_bloqueado");
 
 if (!cursoInscrito) {
     const nombreLindo = bancoLecciones[materiaClave] ? bancoLecciones[materiaClave].materia : materiaClave;
-    if (confirm("📝 ¿Inscribirte en " + nombreLindo + "? Solo puedes tener un curso activo a la vez.")) {
+    msjJbConfirm("¿Inscribirte en " + nombreLindo + "? Solo puedes tener un curso activo a la vez.", function(){
         localStorage.setItem("curso_bloqueado", materiaClave);
         localStorage.setItem("curso_nombre", nombreLindo);
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "ajax_inscribir.php", true);
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         xhr.send("accion=inscribir&materia=" + materiaClave);
-    } else {
+    }, 'aviso', function(){
         window.location.href = "registrar_cursos.php";
-    }
+    });
 } else if (cursoInscrito !== materiaClave) {
     const nombreActivo = localStorage.getItem("curso_nombre");
     msjJb("Ya tienes un curso activo: '" + nombreActivo + "'. Termínalo primero.", 'aviso', 'registrar_cursos.php');

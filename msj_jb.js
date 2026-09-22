@@ -25,8 +25,21 @@
             '.swal2-toast.jb-popup-toast.swal2-hide{animation:jbSalida .15s ease forwards !important;}' +
             '.jb-popup-toast .jb-titulo{font-size:.95em !important;color:#334155 !important;padding:0 !important;}' +
             '.jb-popup-toast .jb-progreso{background:#2196F3 !important;}' +
+            '.swal2-popup.jb-popup-modal{border-radius:18px;font-family:Arial,sans-serif;padding:16px 18px;box-shadow:0 14px 44px rgba(26,66,110,.22);border:1px solid #dbe6f2;}' +
+            '.swal2-popup.jb-popup-modal.swal2-show{animation:jbEntrada .18s ease !important;}' +
+            '.swal2-popup.jb-popup-modal.swal2-hide{animation:jbSalida .12s ease forwards !important;}' +
+            '.jb-popup-modal .jb-titulo{color:#1a426e !important;font-size:1.15em !important;padding-top:4px !important;}' +
+            '.jb-popup-modal .jb-contenido{color:#334155 !important;font-size:1em !important;line-height:1.55 !important;}' +
+            '.jb-popup-modal .jb-boton{border-radius:10px !important;padding:10px 28px !important;font-weight:bold !important;font-size:1em !important;box-shadow:none !important;}' +
+            '.jb-popup-modal .jb-boton-cancel{background:#e9eef5 !important;color:#334155 !important;border-radius:10px !important;padding:10px 28px !important;font-weight:bold !important;font-size:1em !important;box-shadow:none !important;}' +
+            '.jb-popup-modal .swal2-input{border:2px solid #c3d4e5 !important;border-radius:10px !important;font-family:Arial,sans-serif !important;padding:10px !important;}' +
             'body.jb-oscuro .swal2-toast.jb-popup-toast{background:#2d2d2d !important;border-color:#333a44;}' +
-            'body.jb-oscuro .jb-popup-toast .jb-titulo{color:#ffffff !important;}';
+            'body.jb-oscuro .jb-popup-toast .jb-titulo{color:#ffffff !important;}' +
+            'body.jb-oscuro .swal2-popup.jb-popup-modal{background:#1f1f1f !important;border-color:#333a44;}' +
+            'body.jb-oscuro .jb-popup-modal .jb-titulo{color:#ffffff !important;}' +
+            'body.jb-oscuro .jb-popup-modal .jb-contenido{color:#cccccc !important;}' +
+            'body.jb-oscuro .jb-popup-modal .jb-boton-cancel{background:#3a3a3a !important;color:#dddddd !important;}' +
+            'body.jb-oscuro .jb-popup-modal .swal2-input{background:#2d2d2d !important;border-color:#444 !important;color:#ffffff !important;}';
         var hoja = document.createElement('style');
         hoja.id = 'jb-estilos-msj';
         hoja.textContent = css;
@@ -95,5 +108,66 @@
     /* Igual que msjJb pero para usos futuros de avisos rápidos. */
     window.msjJbToast = function (texto, tipo) {
         window.msjJb(texto, tipo);
+    };
+
+    /* Confirmación CENTRADA (más visible, tranquila y con los colores de la app).
+       No es un diálogo flotante arriba.
+       Uso: msjJbConfirm('Texto', alAceptar, tipo, alCancelar) */
+    window.msjJbConfirm = function (texto, alAceptar, tipo, alCancelar) {
+        tipo = tipo || 'aviso';
+        Swal.fire({
+            icon: iconoDe(tipo),
+            title: 'Confirmar',
+            text: texto,
+            showCancelButton: true,
+            confirmButtonText: 'Sí, continuar',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: colorDe(tipo),
+            cancelButtonColor: '#cbd5e1',
+            customClass: {
+                popup: 'jb-popup-modal',
+                title: 'jb-titulo',
+                htmlContainer: 'jb-contenido',
+                confirmButton: 'jb-boton',
+                cancelButton: 'jb-boton-cancel'
+            },
+            backdrop: 'rgba(26, 66, 110, 0.28)',
+            width: 430
+        }).then(function (resultado) {
+            if (resultado.isConfirmed) {
+                if (alAceptar) alAceptar();
+            } else if (alCancelar) {
+                alCancelar();
+            }
+        });
+    };
+
+    /* Cuadro para escribir texto (reemplaza el viejo prompt nativo). */
+    window.msjJbPrompt = function (titulo, valorInicial, alAceptar, alCancelar) {
+        Swal.fire({
+            title: titulo,
+            input: 'text',
+            inputValue: valorInicial || '',
+            inputAttributes: { autocapitalize: 'off' },
+            showCancelButton: true,
+            confirmButtonText: 'Agregar',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#2196F3',
+            cancelButtonColor: '#cbd5e1',
+            customClass: {
+                popup: 'jb-popup-modal',
+                title: 'jb-titulo',
+                confirmButton: 'jb-boton',
+                cancelButton: 'jb-boton-cancel'
+            },
+            backdrop: 'rgba(26, 66, 110, 0.28)',
+            width: 440
+        }).then(function (resultado) {
+            if (resultado.isConfirmed) {
+                if (alAceptar) alAceptar(resultado.value || '');
+            } else if (alCancelar) {
+                alCancelar();
+            }
+        });
     };
 })();
