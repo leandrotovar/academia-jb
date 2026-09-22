@@ -65,7 +65,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 VALUES ('$nombre', '$cedula', '$email', '$password', $tipo_tea, $modo_oscuro, $fuente_grande, $pictogramas, $temporizador)";
 
         if ($conn->query($sql) === TRUE) {
-            aviso_jb('Registro exitoso. Ya puedes iniciar sesión.', 'exito', 'login');
+            header("Location: login.php?ok=registrado");
+            exit();
         } else {
             echo "Error: " . $sql . "<br>" . $conn->error;
         }

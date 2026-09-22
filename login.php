@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -75,7 +75,7 @@
         }
     </style>
     <script src="sweetalert2.all.min.js?v=7"></script>
-    <script src="msj_jb.js?v=7"></script>
+    <script src="msj_jb.js?v=8"></script>
 </head>
 <body>
 
@@ -91,6 +91,10 @@
 
     <!-- INYECCIÓN DEL BLOQUE DE ERROR DINÁMICO -->
     <?php
+    if (isset($_GET['ok']) && $_GET['ok'] == 'registrado') {
+        $msg_jb = '✅ ¡Registro exitoso! Ya puedes iniciar sesión con tu correo y contraseña.';
+        echo '<script>document.addEventListener("DOMContentLoaded", function(){ msjJb(' . json_encode($msg_jb, JSON_UNESCAPED_UNICODE) . ', "exito"); });</script>';
+    }
     if (isset($_GET['error'])) {
         if ($_GET['error'] == 'clave_incorrecta') {
             $msg_jb = '⚠️ Contraseña incorrecta. Inténtalo de nuevo.';
