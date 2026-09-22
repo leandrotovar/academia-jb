@@ -6,7 +6,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $cedula = trim($_POST['cedula']);
     $email = $_POST['email'];
     $password_raw = $_POST['password'];
-    $rol = 'estudiante';
     $tipo_tea = isset($_POST['tipo_tea']) ? intval($_POST['tipo_tea']) : 0;
 
     // Validar dominio Gmail
@@ -41,8 +40,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($resultado->num_rows > 0) {
         echo "<script>alert('El correo electrónico ya se encuentra registrado. Intenta con otro o inicia sesión.'); window.history.back();</script>";
     } else {
-        $sql = "INSERT INTO usuarios (nombre, cedula, email, password, rol, tipo_tea, modo_oscuro, fuente_grande, pictogramas_activos, temporizador_visual) 
-                VALUES ('$nombre', '$cedula', '$email', '$password', '$rol', $tipo_tea, $modo_oscuro, $fuente_grande, $pictogramas, $temporizador)";
+        $sql = "INSERT INTO usuarios (nombre, cedula, email, password, tipo_tea, modo_oscuro, fuente_grande, pictogramas_activos, temporizador_visual) 
+                VALUES ('$nombre', '$cedula', '$email', '$password', $tipo_tea, $modo_oscuro, $fuente_grande, $pictogramas, $temporizador)";
 
         if ($conn->query($sql) === TRUE) {
             echo "<script>alert('Registro exitoso. Ya puedes iniciar sesión.'); window.location.href='login.php';</script>";
