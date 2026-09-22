@@ -446,7 +446,7 @@ $res_estudiantes = $conn->query("
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-    <script src="msj_jb.js?v=5"></script>
+    <script src="msj_jb.js?v=7"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('form.form-eliminar').forEach(function (f) {

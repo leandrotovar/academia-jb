@@ -11,7 +11,7 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['rol'] === 'estudiante') {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Academia JB</title>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-<script src="msj_jb.js?v=5"></script>
+<script src="msj_jb.js?v=7"></script>
 </head>
 <body>
 <script>msjJb("Acceso denegado. Esta pantalla es exclusiva para profesores.", "error", function(){ window.location.href="login.php"; });</script>
@@ -340,7 +340,7 @@ if ($res_sp) {
         .btn-pizarra:hover { filter: brightness(0.94); }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-    <script src="msj_jb.js?v=5"></script>
+    <script src="msj_jb.js?v=7"></script>
 </head>
 <body>
     

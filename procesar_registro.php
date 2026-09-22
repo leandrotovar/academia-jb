@@ -14,7 +14,7 @@ function aviso_jb($texto, $tipo = 'info', $accion = 'atras') {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Academia JB</title>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-<script src="msj_jb.js?v=5"></script>
+<script src="msj_jb.js?v=7"></script>
 </head>
 <body>
 <script>msjJb(' . json_encode($texto, JSON_UNESCAPED_UNICODE) . ', "' . $tipo . '", ' . $js_accion . ');</script>
