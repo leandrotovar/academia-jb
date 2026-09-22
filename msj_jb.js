@@ -3,16 +3,20 @@
    Estilo tranquilo, pensado para no alterar a personas con TEA:
    sin animaciones bruscas, sin sonidos, texto claro y botones de colores de la app.
 
-   ⚠️ Cargar SIEMPRE con el CDN de SweetAlert2 y este archivo en el <head>,
-   y usar msjJb(...) / msjJbConfirm(...) en lugar de alert/confirm nativos.
-
+   ------------------------------------------------------------------
+   ⚠️ IMPORTANTE: cargar SIEMPRE con el CDN de SweetAlert2 (o el archivo
+   local) y este archivo en el <head> ANTES de </head>, en ese orden.
+   ------------------------------------------------------------------
    Carga recomendada (antes de </head>):
      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-     <script src="msj_jb.js?v=7"></script>
+     <script src="msj_jb.js?v=8"></script>
 
    Uso:
-     msjJb('Texto', 'exito|error|aviso|info', 'redirigirA.php' o function)  → aviso inferior discreto
-     msjJbConfirm('Pregunta', alAceptar, tipo, alCancelar)                   → confirmación centrada tranquila */
+     msjJb('Texto', 'exito|error|aviso|info', 'redirigirA.php' o function) → aviso inferior discreto
+     msjJbConfirm('Pregunta', alAceptar, tipo, alCancelar)                  → confirmación centrada tranquila
+
+   NOTA TÉCNICA: este archivo se define en el <head>; SweetAlert2 también.
+   por eso NO se toca document.body hasta que el DOM esté listo. */
 (function () {
     'use strict';
     if (typeof window.Swal === 'undefined') return;
@@ -51,14 +55,7 @@
         var css =
             '@keyframes jbEntrada{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}' +
             '@keyframes jbSalida{from{opacity:1;transform:none;}to{opacity:0;transform:translateY(10px);}}' +
-            /* ---- Aviso inferior (toast), discreto y tranquilo ---- */
-            '.swal2-toast.jb-aviso{font-family:Arial,sans-serif;border-radius:16px;padding:6px 18px;box-shadow:0 8px 26px rgba(26,66,110,.16);border:1px solid #e2e8f0;background:#ffffff !important;}' +
-            '.swal2-toast.jb-aviso.swal2-show{animation:jbEntrada .22s ease !important;}' +
-            '.swal2-toast.jb-aviso.swal2-hide{animation:jbSalida .14s ease forwards !important;}' +
-            '.swal2-toast.jb-aviso .swal2-title{font-size:.98em !important;color:#1a3557 !important;padding:0 !important;}' +
-            '.swal2-toast.jb-aviso .swal2-timer-progress-bar{background:#2196F3 !important;}' +
-            /* ---- Confirmación CENTRADA (más visible y tranquila, estilo app) ---- */
-            '.swal2-popup.jb-confirmar{font-family:Arial,sans-serif;border-radius:18px !important;padding:16px 18px !important;box-shadow:0 14px 44px rgba(26,66,110,.22);border:1px solid #dbe6f2;}' +
+            '.swal2-popup.jb-confirmar{font-family:Arial,sans-serif;border-radius:18px !important;padding:14px 18px !important;box-shadow:0 14px 44px rgba(26,66,110,.2);border:1px solid #dbe6f2;}' +
             '.swal2-popup.jb-confirmar.swal2-show{animation:jbEntrada .18s ease !important;}' +
             '.swal2-popup.jb-confirmar.swal2-hide{animation:jbSalida .12s ease forwards !important;}' +
             '.jb-confirmar .swal2-title{font-size:1.1em !important;color:#1a3557 !important;padding:0 !important;margin-bottom:10px !important;}' +
@@ -66,9 +63,6 @@
             '.jb-confirmar .swal2-confirm{border-radius:10px !important;padding:10px 28px !important;font-weight:bold !important;font-size:1em !important;box-shadow:none !important;}' +
             '.jb-confirmar .swal2-cancel{border-radius:10px !important;padding:10px 28px !important;font-weight:bold !important;font-size:1em !important;box-shadow:none !important;}' +
             '.jb-confirmar .swal2-close{color:#94a3b8 !important;}' +
-            /* ---- Oscuro ---- */
-            'body.jb-oscuro .swal2-toast.jb-aviso{background:#2d2d2d !important;border-color:#3a3a3a;}' +
-            'body.jb-oscuro .swal2-toast.jb-aviso .swal2-title{color:#ffffff !important;}' +
             'body.jb-oscuro .swal2-popup.jb-confirmar{background:#1f1f1f !important;border-color:#3a3a3a;}' +
             'body.jb-oscuro .jb-confirmar .swal2-title{color:#ffffff !important;}' +
             'body.jb-oscuro .jb-confirmar .swal2-html-container{color:#cccccc !important;}' +
@@ -80,7 +74,14 @@
     };
 
     inyectaEstilo();
-    document.body.classList.toggle('jb-oscuro', esOscuro());
+    var aplicaOscuro = function () {
+        document.body.classList.toggle('jb-oscuro', esOscuro());
+    };
+    if (document.body) {
+        aplicaOscuro();
+    } else {
+        document.addEventListener('DOMContentLoaded', aplicaOscuro);
+    }
 
     /* Aviso discreto en la parte INFERIOR. Se cierra solo.
        Uso: msjJb('Texto', 'exito|error|aviso|info', 'redirigirA.php' o function) */
@@ -105,8 +106,8 @@
         });
     };
 
-    /* Confirmación CENTRADA (más visible, tranquila, con los colores de la app).
-       Uso: msjJbConfirm('Texto', alAceptar, 'exito|error|aviso|info', alCancelar) */
+    /* Confirmación CENTRADA (más visible pero tranquila, con los colores de la app).
+       Uso: msjJbConfirm('Pregunta', alAceptar, 'exito|error|aviso|info', alCancelar) */
     window.msjJbConfirm = function (texto, alAceptar, tipo, alCancelar) {
         tipo = tipo || 'aviso';
         Swal.fire({
